@@ -1,0 +1,32 @@
+{
+    "name": "kagonlineteam/ldap-bundle",
+    "description": "Symfony bundle that adds abstraction on top the default ldap component.",
+    "type": "symfony-bundle",
+    "license": "MIT",
+    "minimum-stability": "stable",
+    "require": {
+        "php": "^7.2",
+        "symfony/config": "^5.0",
+        "symfony/dependency-injection": "^5.0",
+        "symfony/http-kernel": "^5.0",
+        "symfony/ldap": "^5.0"
+    },
+    "require-dev": {
+        "symfony/framework-bundle": "^5.0",
+        "symfony/phpunit-bridge": "^5.0"
+    },
+    "conflict": {
+        "symfony/http-foundation": "<5.0",
+        "symfony/framework-bundle": "<5.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "KAGOnlineTeam\\Bundle\\Ldap\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "KAGOnlineTeam\\Bundle\\Ldap\\Tests\\": "tests/"
+        }
+    }
+}
