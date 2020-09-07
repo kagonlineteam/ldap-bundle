@@ -4,9 +4,9 @@ namespace KAGOnlineTeam\LdapBundle\Annotation;
 
 /**
  * Entry annotation for classes.
- * 
+ *
  * @author Jan Flaßkamp
- * 
+ *
  * @Annotation
  * @Target({"CLASS"})
  * @Attributes(

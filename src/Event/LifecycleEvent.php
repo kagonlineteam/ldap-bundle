@@ -6,7 +6,7 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Basic object for all events during the lifecycle of an entry.
- * 
+ *
  * @author Jan Flaßkamp
  */
 class LifecycleEvent extends Event
@@ -21,15 +21,15 @@ class LifecycleEvent extends Event
     public const POST_UPDATE = 'ldap.post_update';
     // Before an entry will be removed.
     public const PRE_REMOVE = 'ldap.pre_remove';
-    // After an entry has been removed successfully. 
+    // After an entry has been removed successfully.
     public const POST_REMOVE = 'ldap.post_remove';
     // This event will be triggered right after an entry has been loaded.
     public const POST_LOAD = 'ldap.post_load';
 
     /**
      * The entry object for which the event occured.
-     * 
-     * @var object $object 
+     *
+     * @var object
      */
     private $object;
 
@@ -39,7 +39,7 @@ class LifecycleEvent extends Event
     }
 
     /**
-     * @return object|null The associated entry object.
+     * @return object|null The associated entry object
      */
     public function getObject(): ?object
     {

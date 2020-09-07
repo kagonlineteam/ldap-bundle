@@ -9,4 +9,4 @@ use RuntimeException;
  */
 class NoMetadataException extends RuntimeException
 {
-} 
+}

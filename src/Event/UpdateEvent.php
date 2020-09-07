@@ -5,16 +5,16 @@ namespace KAGOnlineTeam\LdapBundle;
 use KAGOnlineTeam\LdapBundle\Event\LifecycleEvent;
 
 /**
- * Extends the LifecycleEvent to hold the changeset for update events. 
- * 
+ * Extends the LifecycleEvent to hold the changeset for update events.
+ *
  * @author Jan Flaßkamp
  */
 class UpdateEvent extends LifecycleEvent
 {
     /**
      * Contains the data which has been changed.
-     * 
-     * @var array $changeSet
+     *
+     * @var array
      */
     private $changeSet;
 
@@ -25,7 +25,7 @@ class UpdateEvent extends LifecycleEvent
     }
 
     /**
-     * @return array The changeset of the entry object.
+     * @return array The changeset of the entry object
      */
     public function getChangeSet(): array
     {
