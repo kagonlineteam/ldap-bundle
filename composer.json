@@ -21,12 +21,12 @@
     },
     "autoload": {
         "psr-4": {
-            "KAGOnlineTeam\\Bundle\\Ldap\\": "src/"
+            "KAGOnlineTeam\\LdapBundle\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "KAGOnlineTeam\\Bundle\\Ldap\\Tests\\": "tests/"
+            "KAGOnlineTeam\\LdapBundle\\Tests\\": "tests/"
         }
     }
 }
