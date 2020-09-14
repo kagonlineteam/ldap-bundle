@@ -9,4 +9,8 @@ namespace KAGOnlineTeam\LdapBundle\Metadata;
  */
 interface ClassMetadataInterface
 {
+    /**
+     * Returns the fully qualified class name of the associated class.
+     */
+    public function getClass(): string;
 }
