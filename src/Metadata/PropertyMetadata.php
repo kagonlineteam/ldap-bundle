@@ -5,7 +5,7 @@ namespace KAGOnlineTeam\LdapBundle\Metadata;
 use ReflectionProperty;
 
 /**
- * Stores the metadata for a single property which is associated with a Ldap 
+ * Stores the metadata for a single property which is associated with a Ldap
  * attribute.
  *
  * @author Jan Flaßkamp

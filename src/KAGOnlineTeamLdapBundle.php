@@ -2,9 +2,8 @@
 
 namespace KAGOnlineTeam\LdapBundle;
 
-use Symfony\Component\HttpKernel\Bundle\Bundle;
-use KAGOnlineTeam\LdapBundle\EntryManager;
 use KAGOnlineTeam\LdapBundle\DependencyInjection\KAGOnlineTeamLdapExtension;
+use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
  * @author Jan Flaßkamp

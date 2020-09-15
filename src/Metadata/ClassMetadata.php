@@ -2,16 +2,15 @@
 
 namespace KAGOnlineTeam\LdapBundle\Metadata;
 
-use ReflectionClass;
-use ReflectionProperty;
-use InvalidArgumentException;
-use ReflectionException;
 use function array_search;
 use function array_unique;
-use function key_exists;
+use InvalidArgumentException;
+use ReflectionClass;
+use ReflectionException;
+use ReflectionProperty;
 
 /**
- * 
+ * Basic class metadata implementation.
  *
  * @author Jan Flaßkamp
  */
@@ -85,7 +84,7 @@ class ClassMetadata implements ClassMetadataInterface
         $result = array_search($objectClass, $this->objectClasses, true);
 
         if (false !== $result) {
-            throw new InvalidArgumentException("The objectClass has already been added.");
+            throw new InvalidArgumentException('The objectClass has already been added.');
         }
 
         $this->objectClasses[] = $objectClass;
@@ -122,7 +121,7 @@ class ClassMetadata implements ClassMetadataInterface
         $keyedProperties = [];
         foreach ($properties as $property) {
             if (!$property instanceof PropertyMetadata) {
-                throw new InvalidArgumentException(sprintf("The metadata for a property must be of type \"%s\"", PropertyMetadata::class));
+                throw new InvalidArgumentException(sprintf('The metadata for a property must be of type "%s"', PropertyMetadata::class));
             }
             $keyedProperties[$property->getName()] = $property;
         }
@@ -134,13 +133,13 @@ class ClassMetadata implements ClassMetadataInterface
 
     public function hasProperty(string $name): bool
     {
-        return key_exists($name, $this->properties);
+        return \array_key_exists($name, $this->properties);
     }
 
     public function getProperty(string $name): PropertyMetadata
     {
         if (!$this->hasProperty($name)) {
-            throw new InvalidArgumentException(sprintf("The metadata for \"%s\" does not exist.", $name));
+            throw new InvalidArgumentException(sprintf('The metadata for "%s" does not exist.', $name));
         }
 
         return $this->properties[$name];
@@ -150,9 +149,9 @@ class ClassMetadata implements ClassMetadataInterface
     {
         $name = $property->getName();
         if ($this->hasProperty($name)) {
-            throw new InvalidArgumentException(sprintf("The metadata for \"%s\" has already been added.", $name));
+            throw new InvalidArgumentException(sprintf('The metadata for "%s" has already been added.', $name));
         }
-        
+
         $this->properties[$name] = $property;
 
         return $this;
@@ -162,7 +161,7 @@ class ClassMetadata implements ClassMetadataInterface
     {
         $name = $property->getName();
         if (!$this->hasProperty($name)) {
-            throw new InvalidArgumentException(sprintf("The metadata for \"%s\" does not exist.", $name));
+            throw new InvalidArgumentException(sprintf('The metadata for "%s" does not exist.', $name));
         }
 
         $this->properties[$name] = $property;
@@ -174,7 +173,7 @@ class ClassMetadata implements ClassMetadataInterface
     {
         $name = $property->getName();
         if (!$this->hasProperty($name)) {
-            throw new InvalidArgumentException(sprintf("The metadata for \"%s\" does not exist.", $name));
+            throw new InvalidArgumentException(sprintf('The metadata for "%s" does not exist.', $name));
         }
 
         unset($this->properties[$name]);

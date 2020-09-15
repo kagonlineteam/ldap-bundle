@@ -2,12 +2,12 @@
 
 namespace KAGOnlineTeam\LdapBundle\Metadata\Factory;
 
+use InvalidArgumentException;
 use KAGOnlineTeam\LdapBundle\Exception\NoMetadataException;
 use KAGOnlineTeam\LdapBundle\Metadata\ClassMetadataInterface;
-use InvalidArgumentException;
 
 /**
- * Interface for 
+ * Interface for all different metadata factories.
  *
  * @author Jan Flaßkamp
  */
@@ -20,8 +20,6 @@ interface MetadataFactoryInterface
      *
      * @throws InvalidArgumentException If the class does not exist
      * @throws NoMetadataException      If no metadata can be created
-     *
-     * @return ClassMetadataInterface
      */
     public function create(string $class): ClassMetadataInterface;
 }

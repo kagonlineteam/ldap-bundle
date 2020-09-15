@@ -2,13 +2,13 @@
 
 namespace KAGOnlineTeam\LdapBundle\Tests\IntegrationTests;
 
-use Symfony\Component\DependencyInjection\ContainerBuilder;
+use InvalidArgumentException;
 use KAGOnlineTeam\LdapBundle\EntryManagerInterface;
 use KAGOnlineTeam\LdapBundle\Metadata\PropertyMetadata;
-use KAGOnlineTeam\LdapBundle\Tests\LdapBundleKernelTestCase as KernelTestCase;
 use KAGOnlineTeam\LdapBundle\Tests\Fixtures\DummyUser;
+use KAGOnlineTeam\LdapBundle\Tests\LdapBundleKernelTestCase as KernelTestCase;
 use ReflectionProperty;
-use InvalidArgumentException;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class EntryManagerInterfaceTest extends KernelTestCase
 {
@@ -20,7 +20,7 @@ class EntryManagerInterfaceTest extends KernelTestCase
         ;
 
         self::bootKernel([
-            'builder' => $builder
+            'builder' => $builder,
         ]);
 
         $service = static::$container->get(EntryManagerInterfaceAutowireTest::class);

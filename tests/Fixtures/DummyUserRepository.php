@@ -7,7 +7,7 @@ use KAGOnlineTeam\LdapBundle\RepositoryInterface;
 class DummyUserRepository implements RepositoryInterface
 {
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function find(string $dn): ?object
     {
@@ -15,7 +15,7 @@ class DummyUserRepository implements RepositoryInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function findIn(string $dn): array
     {
@@ -23,7 +23,7 @@ class DummyUserRepository implements RepositoryInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function findAll(): array
     {

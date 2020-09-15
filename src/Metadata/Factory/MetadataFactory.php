@@ -2,12 +2,12 @@
 
 namespace KAGOnlineTeam\LdapBundle\Metadata\Factory;
 
-use KAGOnlineTeam\LdapBundle\Metadata\ClassMetadataInterface;
-use KAGOnlineTeam\LdapBundle\Metadata\ClassMetadata;
-use KAGOnlineTeam\LdapBundle\Metadata\Extractor\ExtractorInterface;
-use KAGOnlineTeam\LdapBundle\Exception\NoMetadataException;
-use InvalidArgumentException;
 use function class_exists;
+use InvalidArgumentException;
+use KAGOnlineTeam\LdapBundle\Exception\NoMetadataException;
+use KAGOnlineTeam\LdapBundle\Metadata\ClassMetadata;
+use KAGOnlineTeam\LdapBundle\Metadata\ClassMetadataInterface;
+use KAGOnlineTeam\LdapBundle\Metadata\Extractor\ExtractorInterface;
 use function sprintf;
 
 /**
@@ -19,7 +19,7 @@ use function sprintf;
 class MetadataFactory implements MetadataFactoryInterface
 {
     /**
-     * @var ExtractorInterface[] $extractorChain
+     * @var ExtractorInterface[]
      */
     private $extractorChain;
 
@@ -29,7 +29,7 @@ class MetadataFactory implements MetadataFactoryInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function create(string $class): ClassMetadataInterface
     {
@@ -42,6 +42,7 @@ class MetadataFactory implements MetadataFactoryInterface
         foreach ($this->extractorChain as $extractor) {
             try {
                 $extractor->extractFor($metadata);
+
                 return $metadata;
             } catch (NoMetadataException $e) {
                 continue;

@@ -3,10 +3,9 @@
 namespace KAGOnlineTeam\LdapBundle\Metadata\Extractor;
 
 use Doctrine\Common\Annotations\Reader;
-use KAGOnlineTeam\LdapBundle\Metadata\Extractor\ExtractorInterface;
+use KAGOnlineTeam\LdapBundle\Annotation;
 use KAGOnlineTeam\LdapBundle\Metadata\ClassMetadataInterface;
 use KAGOnlineTeam\LdapBundle\Metadata\PropertyMetadata;
-use KAGOnlineTeam\LdapBundle\Annotation;
 
 /**
  * Extracts metadata from annotations.
@@ -23,7 +22,7 @@ class AnnotationExtractor implements ExtractorInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function extractFor(ClassMetadataInterface $metadata): void
     {
@@ -43,7 +42,7 @@ class AnnotationExtractor implements ExtractorInterface
                     if ($annotation instanceof Annotation\DistinguishedName) {
                         $metadata->setDnProperty($property);
                     }
-                    
+
                     if ($annotation instanceof Annotation\Attribute) {
                         $propertyMetadata = new PropertyMetadata(
                             $property, $annotation->description

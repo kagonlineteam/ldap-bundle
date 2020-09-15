@@ -2,11 +2,11 @@
 
 namespace KAGOnlineTeam\LdapBundle\Tests\UnitTests\Annotation;
 
-use PHPUnit\Framework\TestCase;
 use Doctrine\Common\Annotations\AnnotationReader;
 use KAGOnlineTeam\LdapBundle\Annotation\Entry;
 use KAGOnlineTeam\LdapBundle\Tests\Fixtures\DummyUser;
 use KAGOnlineTeam\LdapBundle\Tests\Fixtures\DummyUserRepository;
+use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
 class EntryTest extends TestCase
@@ -15,11 +15,11 @@ class EntryTest extends TestCase
     {
         $reader = new AnnotationReader();
         $entry = $reader->getClassAnnotation(
-            new ReflectionClass(DummyUser::class), 
+            new ReflectionClass(DummyUser::class),
             Entry::class
         );
 
         $this->assertSame(DummyUserRepository::class, $entry->repositoryClass);
-        $this->assertSame(["inetOrgPerson", "person", "top"], $entry->objectClasses);
+        $this->assertSame(['inetOrgPerson', 'person', 'top'], $entry->objectClasses);
     }
 }

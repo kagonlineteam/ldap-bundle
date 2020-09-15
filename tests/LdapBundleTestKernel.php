@@ -2,6 +2,10 @@
 
 namespace KAGOnlineTeam\LdapBundle\Tests;
 
+use function array_merge;
+use const DIRECTORY_SEPARATOR;
+use KAGOnlineTeam\LdapBundle\KAGOnlineTeamLdapBundle;
+use function spl_object_hash;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -9,15 +13,8 @@ use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Symfony\Component\HttpKernel\Kernel as BaseKernel;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
-use KAGOnlineTeam\LdapBundle\KAGOnlineTeamLdapBundle;
-use function array_merge;
 use function sys_get_temp_dir;
-use function spl_object_hash;
-use const DIRECTORY_SEPARATOR;
 
-/**
- * 
- */
 class LdapBundleTestKernel extends BaseKernel
 {
     private $builder;

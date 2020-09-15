@@ -14,10 +14,10 @@ interface ExtractorInterface
 {
     /**
      * Fills the given metadata with the extracted data.
-     * 
+     *
      * @throws NoMetadataException If the loader cannot find metadata for the class
      *
-     * @param ClassMetadataInterface 
+     * @param ClassMetadataInterface
      */
     public function extractFor(ClassMetadataInterface $metadata): void;
 }

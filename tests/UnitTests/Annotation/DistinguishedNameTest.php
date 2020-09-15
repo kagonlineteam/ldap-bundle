@@ -2,10 +2,10 @@
 
 namespace KAGOnlineTeam\LdapBundle\Tests\UnitTests\Annotation;
 
-use PHPUnit\Framework\TestCase;
 use Doctrine\Common\Annotations\AnnotationReader;
 use KAGOnlineTeam\LdapBundle\Annotation\DistinguishedName;
 use KAGOnlineTeam\LdapBundle\Tests\Fixtures\DummyUser;
+use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
 
 class DistinguishedNameTest extends TestCase
@@ -14,7 +14,7 @@ class DistinguishedNameTest extends TestCase
     {
         $reader = new AnnotationReader();
         $dn = $reader->getPropertyAnnotation(
-            new ReflectionProperty(DummyUser::class, "dn"), 
+            new ReflectionProperty(DummyUser::class, 'dn'),
             DistinguishedName::class
         );
 
