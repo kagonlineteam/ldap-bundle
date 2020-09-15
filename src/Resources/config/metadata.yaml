@@ -1,0 +1,15 @@
+services:
+    
+    kagonlineteam_ldap.metadata_factory:
+        class: KAGOnlineTeam\LdapBundle\Metadata\Factory\MetadataFactory
+        public: true
+        arguments:
+            - !tagged_iterator kagonlineteam_ldap.metadata_extractor 
+
+    KAGOnlineTeam\LdapBundle\Metadata\Factory\MetadataFactoryInterface:
+        alias: kagonlineteam_ldap.metadata_factory
+
+    KAGOnlineTeam\LdapBundle\Metadata\Extractor\AnnotationExtractor:
+        arguments:
+            - '@annotations.reader'
+        tags: ['kagonlineteam_ldap.metadata_extractor']

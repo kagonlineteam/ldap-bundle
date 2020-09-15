@@ -2,6 +2,7 @@
 
 namespace KAGOnlineTeam\LdapBundle\Metadata\Factory;
 
+use KAGOnlineTeam\LdapBundle\Metadata\ClassMetadataInterface;
 use KAGOnlineTeam\LdapBundle\Metadata\ClassMetadata;
 use KAGOnlineTeam\LdapBundle\Metadata\Extractor\ExtractorInterface;
 use KAGOnlineTeam\LdapBundle\Exception\NoMetadataException;
@@ -22,7 +23,7 @@ class MetadataFactory implements MetadataFactoryInterface
      */
     private $extractorChain;
 
-    public function __construct(array $extractorChain)
+    public function __construct(iterable $extractorChain)
     {
         $this->extractorChain = $extractorChain;
     }

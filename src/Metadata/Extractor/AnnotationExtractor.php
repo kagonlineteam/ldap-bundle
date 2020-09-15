@@ -9,7 +9,7 @@ use KAGOnlineTeam\LdapBundle\Metadata\PropertyMetadata;
 use KAGOnlineTeam\LdapBundle\Annotation;
 
 /**
- * 
+ * Extracts metadata from annotations.
  *
  * @author Jan Flaßkamp
  */
