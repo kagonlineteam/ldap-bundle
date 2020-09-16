@@ -1,6 +1,6 @@
 <?php
 
-namespace KAGOnlineTeam\LdapBundle;
+namespace KAGOnlineTeam\LdapBundle\Exception;
 
 use RuntimeException;
 

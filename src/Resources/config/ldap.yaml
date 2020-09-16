@@ -1,0 +1,10 @@
+services:
+
+    kagonlineteam_ldap.manager:
+        public: true
+        synthetic: true
+
+    KAGOnlineTeam\LdapBundle\EntryManagerInterface:
+        alias: kagonlineteam_ldap.manager
+        public: true
+            
