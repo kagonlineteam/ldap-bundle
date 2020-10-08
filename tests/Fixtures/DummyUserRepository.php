@@ -2,31 +2,27 @@
 
 namespace KAGOnlineTeam\LdapBundle\Tests\Fixtures;
 
-use KAGOnlineTeam\LdapBundle\RepositoryInterface;
+use KAGOnlineTeam\LdapBundle\EntryManagerInterface;
+use KAGOnlineTeam\LdapBundle\EntryRepository;
+use KAGOnlineTeam\LdapBundle\Query\Options;
 
-class DummyUserRepository implements RepositoryInterface
+class DummyUserRepository extends EntryRepository
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function find(string $dn): ?object
+    public function __construct(EntryManagerInterface $em)
     {
-        return null;
+        parent::__construct($em, DummyUser::class);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function findIn(string $dn): array
+    public function findByRole(string $role): array
     {
-        return [];
-    }
+        $query = $this->createQueryBuilder()
+            ->filterEquality()
+                ->on('roles')
+                ->with($role)
+            ->end()
+            ->scope(Options::SCOPE_SUB)
+            ->make();
 
-    /**
-     * {@inheritdoc}
-     */
-    public function findAll(): array
-    {
-        return [];
+        return $this->execute($query);
     }
 }

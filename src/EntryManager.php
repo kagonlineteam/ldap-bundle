@@ -2,9 +2,9 @@
 
 namespace KAGOnlineTeam\LdapBundle;
 
-use Exception;
 use KAGOnlineTeam\LdapBundle\Metadata\ClassMetadataInterface;
 use KAGOnlineTeam\LdapBundle\Metadata\Factory\MetadataFactoryInterface;
+use KAGOnlineTeam\LdapBundle\Query\Query;
 
 class EntryManager implements EntryManagerInterface
 {
@@ -18,6 +18,14 @@ class EntryManager implements EntryManagerInterface
     /**
      * {@inheritdoc}
      */
+    public function getBaseDn(): string
+    {
+        throw new \LogicException('Not yet implemented.');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getMetadata(string $class): ClassMetadataInterface
     {
         return $this->metadataFactory->create($class);
@@ -26,9 +34,16 @@ class EntryManager implements EntryManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function getRepository(string $class): RepositoryInterface
+    public function getRepositoryId(string $class): string
     {
-        throw new Exception('Repositories are yet to be implemented.');
+        return $this->getMetadata($class)->getRepositoryClass();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function query(Query $query): iterable
+    {
     }
 
     /**

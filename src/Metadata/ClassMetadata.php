@@ -52,19 +52,25 @@ class ClassMetadata implements ClassMetadataInterface
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getClass(): string
     {
         return $this->reflection->getName();
     }
 
-    public function getReflectionClass(): ReflectionClass
-    {
-        return $this->reflection;
-    }
-
+    /**
+     * {@inheritdoc}
+     */
     public function getRepositoryClass(): string
     {
         return $this->repositoryClass;
+    }
+
+    public function getReflectionClass(): ReflectionClass
+    {
+        return $this->reflection;
     }
 
     public function setRepositoryClass(string $repositoryClass): self

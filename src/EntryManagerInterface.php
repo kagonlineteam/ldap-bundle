@@ -4,6 +4,7 @@ namespace KAGOnlineTeam\LdapBundle;
 
 use KAGOnlineTeam\LdapBundle\Exception\NoMetadataException;
 use KAGOnlineTeam\LdapBundle\Metadata\ClassMetadataInterface;
+use KAGOnlineTeam\LdapBundle\Query\Query;
 
 /**
  * Main service to obtain and manipulate entry objects.
@@ -12,6 +13,11 @@ use KAGOnlineTeam\LdapBundle\Metadata\ClassMetadataInterface;
  */
 interface EntryManagerInterface
 {
+    /**
+     * @return string The configured base dn for the connection
+     */
+    public function getBaseDn(): string;
+
     /**
      * Returns the class metadata for a given class.
      *
@@ -23,14 +29,19 @@ interface EntryManagerInterface
     public function getMetadata(string $class): ClassMetadataInterface;
 
     /**
-     * Returns a repository instance for the given class.
+     * Returns the service id of the repository.
      *
      * @param string $class The fully qualified class name
      *
      * @throws InvalidArgumentException If the given class does not exist
      * @throws NoMetadataException      If metadata for the class cannot be found
      */
-    public function getRepository(string $class): RepositoryInterface;
+    public function getRepositoryId(string $class): string;
+
+    /**
+     * Queries against the Ldap service and returns the hydrated objects.
+     */
+    public function query(Query $query): iterable;
 
     /**
      * Either marks the given object to be persisted or queues the
