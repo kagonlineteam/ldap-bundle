@@ -6,6 +6,8 @@ use KAGOnlineTeam\LdapBundle\Metadata\ClassMetadataInterface;
 use KAGOnlineTeam\LdapBundle\Query\Filter\FilterInterface;
 use KAGOnlineTeam\LdapBundle\Query\Filter\NestingTrait;
 use KAGOnlineTeam\LdapBundle\Query\Filter\RawFilter;
+use KAGOnlineTeam\LdapBundle\Request\RequestInterface;
+use KAGOnlineTeam\LdapBundle\Request\QueryRequest;
 use Symfony\Component\Ldap\Adapter\ExtLdap\Adapter;
 
 /**
@@ -71,7 +73,7 @@ class Builder implements FilterInterface
      */
     public function in(string $dn): self
     {
-        $this->queryDn = $queryDn;
+        $this->queryDn = $dn;
 
         return $this;
     }
@@ -154,31 +156,42 @@ class Builder implements FilterInterface
     /**
      * @return Query The configured query from this builder intance
      */
-    public function make(): Query
+    public function make(): RequestInterface
     {
-        $filter = $this->resolve([$this, 'getAttribute'], [self::class, 'escape']);
+        $hasQuery = null !== $this->child;
 
-        if ($this->options['append_objectclasses']) {
-            $objFilter = $this->filterAnd();
+        if ($hasQuery) {
+            $queryFilter = $this->resolve([$this, 'getAttribute'], [self::class, 'escape']);
+        }
+
+        if (!$hasQuery or $this->options['append_objectclasses']) {
+            $objCFilter = $this->filterAnd();
 
             foreach ($this->metadata->getObjectClasses() as $objectClass) {
-                $objFilter->filterEquality()
+                $objCFilter->filterEquality()
                     ->with('objectClass', $objectClass)
                 ->end();
             }
+        }
 
-            $rawFilter = (new RawFilter($objFilter, FilterInterface::UNSPECIFIED))
-                ->from($filter);
+        if ($hasQuery and $this->options['append_objectclasses']) {
+            $rawFilter = (new RawFilter($objCFilter, FilterInterface::UNSPECIFIED))
+                ->from($queryFilter);
+        }
 
-            $filter = $objFilter->resolve(function (string $property) {
+        if ($hasQuery and !$this->options['append_objectclasses']) {
+            $filter = $queryFilter;
+        } else {
+            $filter = $objCFilter->resolve(function (string $property) {
                 return $property;
             }, [self::class, 'escape']);
         }
 
-        return new Query(
-            (isset($this->dn) and Options::BASE_DN !== $this->dn) ? $this->dn : $this->baseDn,
+        return new QueryRequest(
+            $this->queryDn ?: $this->baseDn,
             $filter,
-            $this->queryOptions
+            $this->queryOptions,
+            false
         );
     }
 

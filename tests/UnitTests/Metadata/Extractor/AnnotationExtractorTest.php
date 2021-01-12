@@ -32,8 +32,8 @@ class AnnotationExtractorTest extends TestCase
 
         $metadata = $this->prophesize(ClassMetadata::class);
         $metadata->getReflectionClass()->willReturn(new ReflectionClass(DummyUser::class))->shouldBeCalled();
-        $metadata->setRepositoryClass('RepositoryClass')->will(function () {return $this; })->shouldBeCalled();
-        $metadata->setObjectClasses(['top', 'device'])->will(function () {return $this; })->shouldBeCalled();
+        $metadata->setRepositoryClass('RepositoryClass')->shouldBeCalled();
+        $metadata->setObjectClasses(['top', 'device'])->shouldBeCalled();
         $metadata->setDnProperty(new ReflectionProperty(DummyUser::class, 'dn'))->shouldBeCalled();
         $metadata->addProperty(Argument::which('getAttribute', 'uid'))->shouldBeCalled();
 

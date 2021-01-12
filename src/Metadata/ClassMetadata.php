@@ -73,11 +73,9 @@ class ClassMetadata implements ClassMetadataInterface
         return $this->reflection;
     }
 
-    public function setRepositoryClass(string $repositoryClass): self
+    public function setRepositoryClass(string $repositoryClass): void
     {
         $this->repositoryClass = $repositoryClass;
-
-        return $this;
     }
 
     public function getObjectClasses(): array
@@ -98,11 +96,9 @@ class ClassMetadata implements ClassMetadataInterface
         return $this;
     }
 
-    public function setObjectClasses(array $objectClasses): self
+    public function setObjectClasses(array $objectClasses): void
     {
         $this->objectClasses = array_unique($objectClasses);
-
-        return $this;
     }
 
     public function getDnProperty(): ReflectionProperty

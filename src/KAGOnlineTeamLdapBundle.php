@@ -15,8 +15,9 @@ class KAGOnlineTeamLdapBundle extends Bundle
      */
     public function boot()
     {
-        $manager = new EntryManager(
-            $this->container->get('kagonlineteam_ldap.metadata_factory')
+        $manager = new Manager(
+            $this->container->get('kagonlineteam_ldap.metadata_factory'),
+            $this->container->get('kagonlineteam_ldap.connection_factory')->getConnection()
         );
 
         $this->container->set('kagonlineteam_ldap.manager', $manager);

@@ -2,8 +2,6 @@
 
 namespace KAGOnlineTeam\LdapBundle\Metadata;
 
-use ReflectionProperty;
-
 /**
  * Stores the metadata for a single property which is associated with a Ldap
  * attribute.
@@ -22,7 +20,7 @@ class PropertyMetadata
      */
     private $attribute;
 
-    public function __construct(ReflectionProperty $reflection, string $attribute)
+    public function __construct(\ReflectionProperty $reflection, string $attribute)
     {
         $this->reflection = $reflection;
         $this->attribute = $attribute;
@@ -36,7 +34,7 @@ class PropertyMetadata
         return $this->reflection->getName();
     }
 
-    public function getReflectionProperty(): ReflectionProperty
+    public function getReflectionProperty(): \ReflectionProperty
     {
         return $this->reflection;
     }

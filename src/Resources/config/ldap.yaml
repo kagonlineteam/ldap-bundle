@@ -4,7 +4,17 @@ services:
         public: true
         synthetic: true
 
-    KAGOnlineTeam\LdapBundle\EntryManagerInterface:
+    KAGOnlineTeam\LdapBundle\ManagerInterface:
         alias: kagonlineteam_ldap.manager
+
+    kagonlineteam_ldap.connection_factory:
+        class: 'KAGOnlineTeam\LdapBundle\Connection\ConnectionFactory'
         public: true
-            
+        arguments:
+            - null # Connection type
+            - null # Ldap URL
+            - null # bind details
+
+    KAGOnlineTeam\LdapBundle\Connection\ConnectionFactory:
+        alias: kagonlineteam_ldap.connection_factory
+         

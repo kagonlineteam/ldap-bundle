@@ -5,13 +5,15 @@ namespace KAGOnlineTeam\LdapBundle;
 use KAGOnlineTeam\LdapBundle\Exception\NoMetadataException;
 use KAGOnlineTeam\LdapBundle\Metadata\ClassMetadataInterface;
 use KAGOnlineTeam\LdapBundle\Query\Query;
+use KAGOnlineTeam\LdapBundle\Request\RequestInterface;
+use KAGOnlineTeam\LdapBundle\Response\ResponseInterface;
 
 /**
  * Main service to obtain and manipulate entry objects.
  *
  * @author Jan Flaßkamp
  */
-interface EntryManagerInterface
+interface ManagerInterface
 {
     /**
      * @return string The configured base dn for the connection
@@ -39,24 +41,7 @@ interface EntryManagerInterface
     public function getRepositoryId(string $class): string;
 
     /**
-     * Queries against the Ldap service and returns the hydrated objects.
+     * 
      */
-    public function query(Query $query): iterable;
-
-    /**
-     * Either marks the given object to be persisted or queues the
-     * modifications made if the object has already been registered.
-     */
-    public function save(object $entry): void;
-
-    /**
-     * Queues the removal of entry from the Ldap server.
-     */
-    public function remove(object $entry): void;
-
-    /**
-     * All changes to entry object which have been marked via the save/remove
-     * method will be committed to the Ldap server.
-     */
-    public function commit(): void;
+    public function query(RequestInterface $request): ResponseInterface;
 }

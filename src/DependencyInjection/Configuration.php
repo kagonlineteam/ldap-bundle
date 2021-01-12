@@ -17,6 +17,8 @@ final class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
+                ->scalarNode('ldap_url')->end()
+                ->scalarNode('ldap_bind')->end()
             ->end();
 
         return $treeBuilder;

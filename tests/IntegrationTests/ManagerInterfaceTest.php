@@ -2,20 +2,18 @@
 
 namespace KAGOnlineTeam\LdapBundle\Tests\IntegrationTests;
 
-use InvalidArgumentException;
-use KAGOnlineTeam\LdapBundle\EntryManagerInterface;
+use KAGOnlineTeam\LdapBundle\ManagerInterface;
 use KAGOnlineTeam\LdapBundle\Metadata\PropertyMetadata;
 use KAGOnlineTeam\LdapBundle\Tests\Fixtures\DummyUser;
 use KAGOnlineTeam\LdapBundle\Tests\LdapBundleKernelTestCase as KernelTestCase;
-use ReflectionProperty;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
-class EntryManagerInterfaceTest extends KernelTestCase
+class ManagerInterfaceTest extends KernelTestCase
 {
     public function testEntryManagerInterfaceIsAutowiredByContainer()
     {
         $builder = new ContainerBuilder();
-        $builder->autowire(EntryManagerInterfaceAutowireTest::class)
+        $builder->autowire(ManagerInterfaceAutowireTest::class)
             ->setPublic(true)
         ;
 
@@ -23,7 +21,7 @@ class EntryManagerInterfaceTest extends KernelTestCase
             'builder' => $builder,
         ]);
 
-        $service = static::$container->get(EntryManagerInterfaceAutowireTest::class);
+        $service = static::$container->get(ManagerInterfaceAutowireTest::class);
 
         $this->expectNotToPerformAssertions();
     }
@@ -32,22 +30,22 @@ class EntryManagerInterfaceTest extends KernelTestCase
     {
         self::bootKernel();
 
-        $manager = static::$container->get(EntryManagerInterface::class);
+        $manager = static::$container->get('kagonlineteam_ldap.manager');
         $metadata = $manager->getMetadata(DummyUser::class);
 
         $this->assertSame(DummyUser::class, $metadata->getClass());
         $this->assertSame('KAGOnlineTeam\\LdapBundle\\Tests\\Fixtures\\DummyUserRepository', $metadata->getRepositoryClass());
         $this->assertSame(['inetOrgPerson', 'person', 'top'], $metadata->getObjectClasses());
 
-        $dnProperty = new ReflectionProperty(DummyUser::class, 'dn');
+        $dnProperty = new \ReflectionProperty(DummyUser::class, 'dn');
         $this->assertEquals($dnProperty, $metadata->getDnProperty());
 
         $usernamePropertyMetadata = new PropertyMetadata(
-            new ReflectionProperty(DummyUser::class, 'username'),
+            new \ReflectionProperty(DummyUser::class, 'username'),
             'uid'
         );
         $namePropertyMetadata = new PropertyMetadata(
-            new ReflectionProperty(DummyUser::class, 'name'),
+            new \ReflectionProperty(DummyUser::class, 'name'),
             'givenName'
         );
         foreach ([$usernamePropertyMetadata, $namePropertyMetadata] as $propertyMetadata) {
@@ -60,16 +58,16 @@ class EntryManagerInterfaceTest extends KernelTestCase
     {
         self::bootKernel();
 
-        $manager = static::$container->get(EntryManagerInterface::class);
+        $manager = static::$container->get('kagonlineteam_ldap.manager');
 
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
         $metadata = $manager->getMetadata('InvalidNamespace\\InvalidClass');
     }
 }
 
-class EntryManagerInterfaceAutowireTest
+class ManagerInterfaceAutowireTest
 {
-    public function __construct(EntryManagerInterface $em)
+    public function __construct(ManagerInterface $manager)
     {
     }
 }

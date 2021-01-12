@@ -2,15 +2,15 @@
 
 namespace KAGOnlineTeam\LdapBundle\Tests\Fixtures;
 
-use KAGOnlineTeam\LdapBundle\EntryManagerInterface;
-use KAGOnlineTeam\LdapBundle\EntryRepository;
+use KAGOnlineTeam\LdapBundle\ManagerInterface;
+use KAGOnlineTeam\LdapBundle\AbstractRepository;
 use KAGOnlineTeam\LdapBundle\Query\Options;
 
-class DummyUserRepository extends EntryRepository
+class DummyUserRepository extends AbstractRepository
 {
-    public function __construct(EntryManagerInterface $em)
+    public function __construct(ManagerInterface $manager)
     {
-        parent::__construct($em, DummyUser::class);
+        parent::__construct($manager, DummyUser::class);
     }
 
     public function findByRole(string $role): array

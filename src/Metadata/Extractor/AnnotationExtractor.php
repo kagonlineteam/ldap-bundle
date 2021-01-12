@@ -31,8 +31,8 @@ class AnnotationExtractor implements ExtractorInterface
 
         foreach ($this->reader->getClassAnnotations($reflClass) as $annotation) {
             if ($annotation instanceof Annotation\Entry) {
-                $metadata->setRepositoryClass($annotation->repositoryClass)
-                    ->setObjectClasses($annotation->objectClasses);
+                $metadata->setRepositoryClass($annotation->repositoryClass);
+                $metadata->setObjectClasses($annotation->objectClasses);
             }
         }
 

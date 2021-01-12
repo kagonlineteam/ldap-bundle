@@ -24,7 +24,7 @@ class Options
         }
     }
 
-    public function assertDeref(int $deref): void
+    public static function assertDeref(int $deref): void
     {
         if (!\in_array($deref, [
             self::DEREF_NEVER, self::DEREF_SEARCHING, self::DEREF_FINDING, self::DEREF_ALWAYS,
@@ -33,21 +33,21 @@ class Options
         }
     }
 
-    public function assertTimeout(int $timelimit): void
+    public static function assertTimeout(int $timelimit): void
     {
         if ($timelimit < 0) {
             throw new \InvalidArgumentException(sprintf('Invalid time limit: %d', $timelimit));
         }
     }
 
-    public function assertLimit(int $limit): void
+    public static function assertLimit(int $limit): void
     {
         if ($limit < 1) {
             throw new \InvalidArgumentException(sprintf('Limit must be greater than 0'));
         }
     }
 
-    public function assertFilter(string $filter): void
+    public static function assertFilter(string $filter): void
     {
     }
 }

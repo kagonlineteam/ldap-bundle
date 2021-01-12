@@ -4,16 +4,18 @@ namespace KAGOnlineTeam\LdapBundle;
 
 use KAGOnlineTeam\LdapBundle\Query\Builder;
 use KAGOnlineTeam\LdapBundle\Query\Options;
+use KAGOnlineTeam\LdapBundle\Request\QueryRequest;
 
-class EntryRepository implements RepositoryInterface
+abstract class AbstractRepository implements RepositoryInterface
 {
     private $manager;
     private $metadata;
 
-    public function __construct(EntryManagerInterface $manager, string $class)
+    public function __construct(ManagerInterface $manager, string $class)
     {
         $this->manager = $manager;
         $this->metadata = $manager->getMetadata($class);
+        $this->worker = new Worker($this->metadata);
     }
 
     /**
@@ -38,7 +40,8 @@ class EntryRepository implements RepositoryInterface
             ->scope(Options::SCOPE_BASE)
             ->make();
 
-        return $this->execute($qb);
+        $entries = \iterator_to_array($this->execute($qb));
+        return \count($entries) === 0 ? null : $entries[0];
     }
 
     /**
@@ -61,7 +64,7 @@ class EntryRepository implements RepositoryInterface
      */
     public function persist(object $entry): void
     {
-        $this->manager->persist($this->getClass(), $entry);
+        $this->worker->mark($entry, Worker::MARK_PERSISTENCE);
     }
 
     /**
@@ -69,7 +72,7 @@ class EntryRepository implements RepositoryInterface
      */
     public function remove(object $entry): void
     {
-        $this->manager->remove($this->getClass(), $entry);
+        $this->worker->mark($entry, Worker::MARK_REMOVAL);
     }
 
     /**
@@ -77,7 +80,11 @@ class EntryRepository implements RepositoryInterface
      */
     public function commit(): void
     {
-        $this->manager->commit($this->getClass());
+        foreach ($this->worker->createRequests() as $request) {
+            $this->worker->update(
+                $this->manager->query($request)
+            );
+        }
     }
 
     /**
@@ -88,8 +95,12 @@ class EntryRepository implements RepositoryInterface
         return new Builder($this->manager->getBaseDn(), $this->metadata);
     }
 
-    protected function execute(Query $query): iterable
+    protected function execute(QueryRequest $request): iterable
     {
-        return $this->manager->query($query, $this->getClass());
+        $this->worker->update(
+            $this->manager->query($request)
+        );
+
+        return $this->worker->fetchLatest();
     }
 }
