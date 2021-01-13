@@ -2,7 +2,6 @@
 
 namespace KAGOnlineTeam\LdapBundle\Tests\IntegrationTests\Query;
 
-use KAGOnlineTeam\LdapBundle\ManagerInterface;
 use KAGOnlineTeam\LdapBundle\Query\Builder;
 use KAGOnlineTeam\LdapBundle\Tests\Fixtures\DummyUser;
 use KAGOnlineTeam\LdapBundle\Tests\LdapBundleKernelTestCase as KernelTestCase;

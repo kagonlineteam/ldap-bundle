@@ -2,13 +2,12 @@
 
 namespace KAGOnlineTeam\LdapBundle\Tests\UnitTests;
 
-use KAGOnlineTeam\LdapBundle\Worker;
-use KAGOnlineTeam\LdapBundle\Metadata\ClassMetadataInterface;
-use KAGOnlineTeam\LdapBundle\Serializer\SerializerInterface;
+use KAGOnlineTeam\LdapBundle\Metadata\ClassMetadata;
 use KAGOnlineTeam\LdapBundle\Request;
+use KAGOnlineTeam\LdapBundle\Serializer\SerializerInterface;
 use KAGOnlineTeam\LdapBundle\Tests\Fixtures\DummyUser;
+use KAGOnlineTeam\LdapBundle\Worker;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
 
 class WorkerTest extends TestCase
 {
@@ -16,7 +15,7 @@ class WorkerTest extends TestCase
     {
         $newUser = new DummyUser('uid=User1,ou=users', 'User1', 'User');
 
-        $metadata = $this->prophesize(ClassMetadataInterface::class);
+        $metadata = $this->prophesize(ClassMetadata::class);
         $serializer = $this->prophesize(SerializerInterface::class);
         $serializer->normalize($newUser)->willReturn([
             'dn' => 'uid=User1,ou=users',

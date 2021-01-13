@@ -2,12 +2,12 @@
 
 namespace KAGOnlineTeam\LdapBundle;
 
-use KAGOnlineTeam\LdapBundle\Metadata\ClassMetadataInterface;
-use KAGOnlineTeam\LdapBundle\Request as Request;
+use KAGOnlineTeam\LdapBundle\Metadata\ClassMetadata;
+use KAGOnlineTeam\LdapBundle\Request;
+use KAGOnlineTeam\LdapBundle\Response;
 use KAGOnlineTeam\LdapBundle\Response\ResponseInterface;
-use KAGOnlineTeam\LdapBundle\Response as Response;
-use KAGOnlineTeam\LdapBundle\Serializer\SerializerInterface;
 use KAGOnlineTeam\LdapBundle\Serializer\ReflectionSerializer;
+use KAGOnlineTeam\LdapBundle\Serializer\SerializerInterface;
 
 /**
  * 
@@ -26,7 +26,7 @@ class Worker
     const MARK_REMOVAL = 2;
 
     /**
-     * @var ClassMetadataInterface
+     * @var ClassMetadata
      */
     private $metadata;
 
@@ -45,7 +45,7 @@ class Worker
      */
     private $data = [];
 
-    public function __construct(ClassMetadataInterface $metadata, SerializerInterface $serializer = null)
+    public function __construct(ClassMetadata $metadata, SerializerInterface $serializer = null)
     {
         $this->metadata = $metadata;
         $this->serializer = null === $serializer ? new ReflectionSerializer($metadata) : $serializer;
@@ -88,12 +88,11 @@ class Worker
             $mark = $this->data[$id]['mark'];
 
             switch ($mark) {
-                case self::MARK_NULL;
+                case self::MARK_NULL:
                     if (self::STATE_MANAGED === $state) {
                         $changeSet = $this->computeChangeSet($this->data[$id]['original'], $data);
                         yield new Request\UpdateRequest($this->data[$id]['original']['dn'], $changeSet);
-                    }
-                    
+                    } 
                     break;
 
                 case self::MARK_PERSISTENCE:
@@ -101,7 +100,7 @@ class Worker
                         yield new Request\NewEntryRequest($data['dn'], $data['attributes']);
                     }
                     break;
-                    
+
                 case self::MARK_REMOVAL:
                     if (self::STATE_MANAGED === $state) {
                         yield new Request\DeleteRequest($data['dn']);
@@ -123,7 +122,7 @@ class Worker
         switch (\get_class($response)) {
             case Response\EntriesResponse::class:
                 $this->createObjects($response->getEntries());
-            break;            
+            break;   
         }
     }
 
@@ -168,7 +167,7 @@ class Worker
 
     private function createObjects(iterable $entries): void
     {
-        foreach ($entries as [$dn, $objectClasses, $attributes]) {            
+        foreach ($entries as [$dn, $objectClasses, $attributes]) {
             // Check if all objectClasses are present.
             if (!empty(\array_diff($this->metadata->getObjectClasses(), $objectClasses))) {
                 continue;

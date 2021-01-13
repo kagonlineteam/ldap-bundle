@@ -10,37 +10,26 @@ namespace KAGOnlineTeam\LdapBundle\Metadata;
  */
 class PropertyMetadata
 {
-    /**
-     * @var ReflectionProperty
-     */
-    private $reflection;
-
-    /**
-     * @var string
-     */
+    private $property;
     private $attribute;
 
-    public function __construct(\ReflectionProperty $reflection, string $attribute)
+    public function __construct(string $property)
     {
-        $this->reflection = $reflection;
-        $this->attribute = $attribute;
+        $this->property = $property;
     }
 
-    /**
-     * @var string The name of the property
-     */
-    public function getName(): string
+    public function getProperty(): string
     {
-        return $this->reflection->getName();
-    }
-
-    public function getReflectionProperty(): \ReflectionProperty
-    {
-        return $this->reflection;
+        return $this->property;
     }
 
     public function getAttribute(): string
     {
         return $this->attribute;
+    }
+
+    public function setAttribute(string $attribute): void
+    {
+        $this->attribute = $attribute;
     }
 }

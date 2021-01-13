@@ -2,12 +2,12 @@
 
 namespace KAGOnlineTeam\LdapBundle\Query;
 
-use KAGOnlineTeam\LdapBundle\Metadata\ClassMetadataInterface;
+use KAGOnlineTeam\LdapBundle\Metadata\ClassMetadata;
 use KAGOnlineTeam\LdapBundle\Query\Filter\FilterInterface;
 use KAGOnlineTeam\LdapBundle\Query\Filter\NestingTrait;
 use KAGOnlineTeam\LdapBundle\Query\Filter\RawFilter;
-use KAGOnlineTeam\LdapBundle\Request\RequestInterface;
 use KAGOnlineTeam\LdapBundle\Request\QueryRequest;
+use KAGOnlineTeam\LdapBundle\Request\RequestInterface;
 use Symfony\Component\Ldap\Adapter\ExtLdap\Adapter;
 
 /**
@@ -25,7 +25,7 @@ class Builder implements FilterInterface
     private $baseDn;
 
     /**
-     * @var ClassMetadataInterface
+     * @var ClassMetadata
      */
     private $metadata;
 
@@ -57,7 +57,7 @@ class Builder implements FilterInterface
      */
     private $attributeMap = [];
 
-    public function __construct(string $baseDn, ClassMetadataInterface $metadata)
+    public function __construct(string $baseDn, ClassMetadata $metadata)
     {
         $this->baseDn = $baseDn;
         $this->metadata = $metadata;
@@ -230,14 +230,13 @@ class Builder implements FilterInterface
      */
     public function getAttribute(string $property): string
     {
-        $this->metadata->getClass();
         if (!$this->options['resolve_properties']) {
             return $property;
         }
 
         if (empty($this->attributeMap)) {
             foreach ($this->metadata->getProperties() as $propertyMetadata) {
-                $this->attributeMap[$propertyMetadata->getName()] = $propertyMetadata->getAttribute();
+                $this->attributeMap[$propertyMetadata->getProperty()] = $propertyMetadata->getAttribute();
             }
         }
 

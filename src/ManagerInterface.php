@@ -3,7 +3,7 @@
 namespace KAGOnlineTeam\LdapBundle;
 
 use KAGOnlineTeam\LdapBundle\Exception\NoMetadataException;
-use KAGOnlineTeam\LdapBundle\Metadata\ClassMetadataInterface;
+use KAGOnlineTeam\LdapBundle\Metadata\ClassMetadata;
 use KAGOnlineTeam\LdapBundle\Query\Query;
 use KAGOnlineTeam\LdapBundle\Request\RequestInterface;
 use KAGOnlineTeam\LdapBundle\Response\ResponseInterface;
@@ -25,18 +25,18 @@ interface ManagerInterface
      *
      * @param string $class The fully qualified class name
      *
-     * @throws InvalidArgumentException If the given class does not exist
-     * @throws NoMetadataException      If metadata for the class cannot be found
+     * @throws \InvalidArgumentException If the given class does not exist
+     * @throws NoMetadataException       If metadata for the class cannot be found
      */
-    public function getMetadata(string $class): ClassMetadataInterface;
+    public function getMetadata(string $class): ClassMetadata;
 
     /**
      * Returns the service id of the repository.
      *
      * @param string $class The fully qualified class name
      *
-     * @throws InvalidArgumentException If the given class does not exist
-     * @throws NoMetadataException      If metadata for the class cannot be found
+     * @throws \InvalidArgumentException If the given class does not exist
+     * @throws NoMetadataException       If metadata for the class cannot be found
      */
     public function getRepositoryId(string $class): string;
 

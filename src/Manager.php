@@ -2,11 +2,10 @@
 
 namespace KAGOnlineTeam\LdapBundle;
 
-use KAGOnlineTeam\LdapBundle\Metadata\ClassMetadataInterface;
-use KAGOnlineTeam\LdapBundle\Metadata\Factory\MetadataFactoryInterface;
 use KAGOnlineTeam\LdapBundle\Connection\ConnectionInterface;
+use KAGOnlineTeam\LdapBundle\Metadata\ClassMetadata;
+use KAGOnlineTeam\LdapBundle\Metadata\Factory\MetadataFactoryInterface;
 use KAGOnlineTeam\LdapBundle\Query\Query;
-use KAGOnlineTeam\LdapBundle\Request;
 use KAGOnlineTeam\LdapBundle\Request\RequestInterface;
 use KAGOnlineTeam\LdapBundle\Response\ResponseInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -46,7 +45,7 @@ class Manager implements ManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function getMetadata(string $class): ClassMetadataInterface
+    public function getMetadata(string $class): ClassMetadata
     {
         return $this->metadataFactory->create($class);
     }

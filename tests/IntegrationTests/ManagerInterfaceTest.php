@@ -3,6 +3,7 @@
 namespace KAGOnlineTeam\LdapBundle\Tests\IntegrationTests;
 
 use KAGOnlineTeam\LdapBundle\ManagerInterface;
+use KAGOnlineTeam\LdapBundle\Metadata\DnMetadata;
 use KAGOnlineTeam\LdapBundle\Metadata\PropertyMetadata;
 use KAGOnlineTeam\LdapBundle\Tests\Fixtures\DummyUser;
 use KAGOnlineTeam\LdapBundle\Tests\LdapBundleKernelTestCase as KernelTestCase;
@@ -36,22 +37,13 @@ class ManagerInterfaceTest extends KernelTestCase
         $this->assertSame(DummyUser::class, $metadata->getClass());
         $this->assertSame('KAGOnlineTeam\\LdapBundle\\Tests\\Fixtures\\DummyUserRepository', $metadata->getRepositoryClass());
         $this->assertSame(['inetOrgPerson', 'person', 'top'], $metadata->getObjectClasses());
+        $this->assertEquals(new DnMetadata('dn'), $metadata->getDn());
 
-        $dnProperty = new \ReflectionProperty(DummyUser::class, 'dn');
-        $this->assertEquals($dnProperty, $metadata->getDnProperty());
-
-        $usernamePropertyMetadata = new PropertyMetadata(
-            new \ReflectionProperty(DummyUser::class, 'username'),
-            'uid'
-        );
-        $namePropertyMetadata = new PropertyMetadata(
-            new \ReflectionProperty(DummyUser::class, 'name'),
-            'givenName'
-        );
-        foreach ([$usernamePropertyMetadata, $namePropertyMetadata] as $propertyMetadata) {
-            $this->assertTrue($metadata->hasProperty($propertyMetadata->getName()));
-            $this->assertEquals($propertyMetadata, $metadata->getProperty($propertyMetadata->getName()));
-        }
+        $usernameProperty = new PropertyMetadata('username');
+        $usernameProperty->setAttribute('uid');
+        $nameProperty = new PropertyMetadata('name');
+        $nameProperty->setAttribute('givenName');
+        $this->assertEquals([$usernameProperty, $nameProperty], $metadata->getProperties());
     }
 
     public function testGetMetadataWithInvalidClass()
