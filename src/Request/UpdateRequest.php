@@ -5,6 +5,23 @@ namespace KAGOnlineTeam\LdapBundle\Request;
 class UpdateRequest implements RequestInterface
 {
     private $dn;
+
+    /**
+     * Format:
+     * [
+     *     'dn' => (string) The modified dn or null
+     *     'attributes' => [
+     *         '<attribute> => [
+     *             'add' => (array) New attribute values
+     *             'keep' => (array) Attribute values which should be kept
+     *             'delete' => (array) Attribute values which should be deleted
+     *         ]
+     *         '<other-attribute> => ...
+     *     ],
+     * ]
+     *
+     * @var array
+     */
     private $changeSet;
 
     public function __construct(string $dn, array $changeSet)

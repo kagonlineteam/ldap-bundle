@@ -6,14 +6,14 @@ class QueryRequest implements RequestInterface
 {
     private $dn;
     private $filter;
-    private $options;
+    private $options = [];
     private $readOnly;
 
     public function __construct(string $dn, string $filter, array $options, bool $readOnly = true)
     {
         $this->dn = $dn;
         $this->filter = $filter;
-        $this->options;
+        $this->options = $options;
         $this->readOnly = $readOnly;
     }
 
@@ -34,6 +34,6 @@ class QueryRequest implements RequestInterface
 
     public function isReadOnly(): bool
     {
-        return $readOnly;
+        return $this->readOnly;
     }
 }

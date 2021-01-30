@@ -4,43 +4,44 @@ namespace KAGOnlineTeam\LdapBundle;
 
 use KAGOnlineTeam\LdapBundle\Metadata\ClassMetadata;
 use KAGOnlineTeam\LdapBundle\Request;
-use KAGOnlineTeam\LdapBundle\Response;
+use KAGOnlineTeam\LdapBundle\Response\EntriesResponse;
 use KAGOnlineTeam\LdapBundle\Response\ResponseInterface;
 use KAGOnlineTeam\LdapBundle\Serializer\ReflectionSerializer;
 use KAGOnlineTeam\LdapBundle\Serializer\SerializerInterface;
 
 /**
- * 
+ * Manages the instances of Ldap entries and tracks the changes.
  */
 class Worker
 {
-    const STATE_UNMANAGED = 0;
-    const STATE_LOADED = 1;
-    const STATE_READ_ONLY = 2;
-    const STATE_MANAGED = 3;
-    const STATE_COMMITTING = 4;
-    const STATE_COMMITTED = 5;
-
-    const MARK_NULL = 0;
-    const MARK_PERSISTENCE = 1;
-    const MARK_REMOVAL = 2;
-
     /**
-     * @var ClassMetadata
+     * State and marks provide information for usage in a bitmask about the state and commit actions of an instance. 
      */
+    const STATE_MANAGED = 1;
+    const MARK_LOADED = 2;
+    const MARK_COMMITTING = 4;
+    const MARK_PERSISTENCE = 8;
+    const MARK_REMOVAL = 16;
+    const MARK_READ_ONLY = 32;
+
     private $metadata;
-
-    /**
-     * @var SerializerInterface
-     */
     private $serializer;
 
     /**
+     * A list of all active instances with the object hash as array key.
+     * 
      * @var object[]
      */
     private $entries = [];
 
     /**
+     * Stores information about all active instances in the form:
+     *     <spl-object-hash> => [
+     *         'state' => The state (managed/unmanaged) and additional marks
+     *         'original' => The original data set of the entry
+     *         'changes' => The currently used change set 
+     *     ]
+     * 
      * @var array
      */
     private $data = [];
@@ -52,77 +53,29 @@ class Worker
     }
 
     /**
-     * Marks 
+     * Updates the worker by adding the entries from a response.
      */
-    public function mark(object $entry, int $mark): void
+    public function update(EntriesResponse $response): void
     {
-        if (!\in_array($mark, [self::MARK_PERSISTENCE, self::MARK_REMOVAL])) {
-            throw new \InvalidArgumentException('Invalid mark given.');
-        }
-
-        $id = \spl_object_hash($entry);
-
-        if (self::MARK_PERSISTENCE === $mark and !\array_key_exists($id, $this->data)) {
-            $this->entries[$id] = $entry;
-            $this->data[$id] = $this->fetchNewData($entry);
-        } elseif (self::MARK_REMOVAL === $mark and self::STATE_MANAGED === $this->data[$id]['state']) {
-            $this->data[$id]['mark'] = self::MARK_REMOVAL;
-        }
-    }
-
-    /**
-     * 
-     */
-    public function createRequests(): iterable
-    {
-        // Set the internal pointer to the first element and return if the array is empty.
-        if (false === \reset($this->entries)) {
-            return [];
-        }
-
-        do {
-            $id = \spl_object_hash(\current($this->entries));
-            $data = $this->serializer->normalize(\current($this->entries));
-
-            $state = $this->data[$id]['state'];
-            $mark = $this->data[$id]['mark'];
-
-            switch ($mark) {
-                case self::MARK_NULL:
-                    if (self::STATE_MANAGED === $state) {
-                        $changeSet = $this->computeChangeSet($this->data[$id]['original'], $data);
-                        yield new Request\UpdateRequest($this->data[$id]['original']['dn'], $changeSet);
-                    } 
-                    break;
-
-                case self::MARK_PERSISTENCE:
-                    if (self::STATE_UNMANAGED === $state) {
-                        yield new Request\NewEntryRequest($data['dn'], $data['attributes']);
-                    }
-                    break;
-
-                case self::MARK_REMOVAL:
-                    if (self::STATE_MANAGED === $state) {
-                        yield new Request\DeleteRequest($data['dn']);
-                    }
-                    break;
-
-                default:
-                    throw new \RuntimeException('Undefined mark.');
+        foreach ($response->getEntries() as [$dn, $objectClasses, $attributes]) {
+            // Check if all objectClasses are present.
+            if (!empty(\array_diff($this->metadata->getObjectClasses(), $objectClasses))) {
+                continue;
             }
 
-        } while (false !== \next($this->entries));
-    }
+            $entry = $this->serializer->denormalize($dn, $attributes);
+            $id = \spl_object_hash($entry);
 
-    /**
-     * 
-     */
-    public function update(ResponseInterface $response): void
-    {
-        switch (\get_class($response)) {
-            case Response\EntriesResponse::class:
-                $this->createObjects($response->getEntries());
-            break;   
+            $this->entries[$id] = $entry;
+            $this->data[$id] = [
+                'state' => $response->isReadOnly() ? self::STATE_MANAGED | self::MARK_LOADED | self::MARK_READ_ONLY : self::STATE_MANAGED | self::MARK_LOADED,
+                'original' => [
+                    'dn' => $dn,
+                    'objectclasses' => $objectClasses,
+                    'attributes' => $attributes,
+                ],
+                'changes' => null,
+            ];
         }
     }
 
@@ -137,59 +90,165 @@ class Worker
         do {
             $entry = \current($this->entries);
             $id = \spl_object_hash($entry);
-            if (self::STATE_LOADED !== $this->data[$id]['state']) {
+            $state = $this->data[$id]['state'];
+
+            if (0 === (self::MARK_LOADED & $state)) {
                 break;
             }
 
+            if (0 !== (self::MARK_READ_ONLY & $state)) {
+                unset($this->entries[$id]);
+                unset($this->data[$id]);
+            } else {
+                $this->data[$id]['state'] = $state ^ self::MARK_LOADED;
+            }
+
             yield $entry;
-            $this->data[$id]['state'] = self::STATE_MANAGED;
             
         } while (false !== \prev($this->entries));
     }
 
-    private function fetchNewData(object $entry): array
+    /**
+     * Adds a mark to the state of an entry which will be used in the commit call.
+     */
+    public function mark(object $entry, int $mark): void
     {
-        return [
-            'state' => self::STATE_UNMANAGED,
-            'mark' => self::MARK_PERSISTENCE,
-            'original' => null,
-        ];
-    }
+        if (!\in_array($mark, [self::MARK_READ_ONLY, self::MARK_PERSISTENCE, self::MARK_REMOVAL])) {
+            throw new \InvalidArgumentException('Invalid mark given.');
+        }
 
-    private function fetchLoadData(object $entry): array
-    {
-        return [
-            'state' => self::STATE_LOADED,
-            'mark' => self::MARK_NULL,
-            'original' => $this->serializer->normalize($entry),
-        ];
-    }
+        $id = \spl_object_hash($entry);
 
-    private function createObjects(iterable $entries): void
-    {
-        foreach ($entries as [$dn, $objectClasses, $attributes]) {
-            // Check if all objectClasses are present.
-            if (!empty(\array_diff($this->metadata->getObjectClasses(), $objectClasses))) {
-                continue;
-            }
+        if (self::MARK_PERSISTENCE !== $mark and 0 !== ($mark & $this->data[$id]['state'])) {
+            throw new \InvalidArgumentException('The mark is already set.');
+        }
 
-            $entry = $this->serializer->denormalize($dn, $attributes);
-            $id = \spl_object_hash($entry);
-
-            $this->entries[$id] = $entry;
-            $this->data[$id] = $this->fetchLoadData($entry);
+        switch ($mark) {
+            case self::MARK_READ_ONLY:
+                $this->data[$id]['state'] = self::MARK_READ_ONLY | $this->data[$id]['state']; 
+                break;
+            case self::MARK_PERSISTENCE:
+                $this->addEntry($id, $entry);
+                break;
+            case self::MARK_REMOVAL:
+                $this->data[$id]['state'] = self::MARK_REMOVAL | $this->data[$id]['state']; 
+                break;
         }
     }
 
     /**
      * 
      */
-    private function computeChangeSet(array $original, array $current): array
+    public function createRequests(): iterable
+    {
+        // Set the internal pointer to the first element and return if the array is empty.
+        if (false === \reset($this->entries)) {
+            return [];
+        }
+
+        // Try block of the generator.
+        try {
+            do {
+                $entry = \current($this->entries);
+                $id = \spl_object_hash($entry);
+                $state = $this->data[$id]['state'];
+
+                // Ignore entries which are read only, have not been fetched or are being committed.
+                if (0 !== ((self::MARK_READ_ONLY | self::MARK_LOADED | self::MARK_COMMITTING) & $state)) {
+                    continue;
+                }
+
+                $data = $this->serializer->normalize($entry);
+
+                switch ($state) {
+                    // Managed and no marks.
+                    case self::STATE_MANAGED:
+                        $changeSet = $this->computeChangeSet($this->data[$id]['original'], $data);
+                        $this->data[$id]['changes'] = $changeSet;
+
+                        if (null === $changeSet) {
+                            break;
+                        }
+
+                        $this->data[$id]['state'] = $state | self::MARK_COMMITTING;
+                        yield new Request\UpdateRequest($this->data[$id]['original']['dn'], $changeSet);
+                        break;
+                    // Unmanaged and marked persistance.
+                    case self::MARK_PERSISTENCE:
+                        $this->data[$id]['state'] = $state | self::MARK_COMMITTING;
+                        $this->data[$id]['changes'] = $data;
+                        yield new Request\NewEntryRequest($data['dn'], ['objectclass' => $data['objectclasses']] + $data['attributes']);
+                        break;
+                    // Managed and marked removal.
+                    case (self::STATE_MANAGED | self::MARK_REMOVAL):
+                        $this->data[$id]['state'] = $state | self::MARK_COMMITTING;
+                        yield new Request\DeleteRequest($this->data[$id]['original']['dn']);
+                        break;
+
+                    default:
+                        throw new \RuntimeException('Undefined state.');
+                }
+            } while (false !== \next($this->entries));
+
+        } catch (\Exception $e) {
+            // Start rollback.
+            do {
+                $id = \spl_object_hash(\current($this->entries));
+                $state = $this->data[$id]['state'];
+
+                // Ignore entries without the committing mark.
+                if (0 === (self::MARK_COMMITTING & $state)) {
+                    continue;
+                }
+
+                switch ($state) {
+                    // Managed and committing.
+                    case (self::STATE_MANAGED | self::MARK_COMMITTING):
+                        $this->data[$id]['state'] = $state ^ self::MARK_COMMITTING;
+                        yield new Request\UpdateRequest(
+                            $this->data[$id]['changes']['dn'] ?: $this->data[$id]['original']['dn'], 
+                            $this->getInverseChangeSet($this->data[$id]['changes'], $this->data[$id]['original']['dn'])
+                        );
+                        break;
+                    // Unmanaged, committing and marked persistance.
+                    case (self::MARK_COMMITTING | self::MARK_PERSISTENCE):
+                        $this->data[$id]['state'] = $state ^ self::MARK_COMMITTING;
+                        yield new Request\DeleteRequest($this->data[$id]['changes']['dn']);
+                        break;
+                    // Managed, committing and marked removal.
+                    case (self::STATE_MANAGED | self::MARK_COMMITTING | self::MARK_REMOVAL):
+                        $this->data[$id]['state'] = $state ^ self::MARK_COMMITTING;
+                        yield new Request\NewEntryRequest($this->data[$id]['original']['dn'], ['objectclass' => $this->data[$id]['original']['objectclasses']] + $this->data[$id]['original']['attributes']);
+                        break;
+                    // Undefined behaviour.
+                    default:
+                        throw new \RuntimeException('Undefined state.');
+                }
+
+            } while (false !== \prev($this->entries));
+
+            throw $e;
+        }
+    }
+
+    private function addEntry(string $id, object $entry): void
+    {
+        $this->data[$id] = [
+            'state' => self::MARK_PERSISTENCE,
+            'original' => [],
+            'changes' => [],
+        ];
+        $this->entries[$id] = $entry;
+    }
+
+    private function computeChangeSet(array $original, array $current): ?array
     {
         $changeSet = [
-            'dn' => $original['dn'] !== $current['dn'] ? $current['dn'] : '',
+            'dn' => $original['dn'] !== $current['dn'] ? $current['dn'] : null,
             'attributes' => [],
         ];
+
+        $hasChanges = null !== $changeSet['dn'];
 
         // Handle all attributes not present in the current form.
         foreach (\array_diff_key($original['attributes'], $current['attributes']) as $attribute => $values) {
@@ -198,6 +257,7 @@ class Worker
                 'keep' => [],
                 'delete' => $values,
             ];
+            $hasChanges = true;
         }
 
         // Handle all attributes not present in the original form.
@@ -207,6 +267,7 @@ class Worker
                 'keep' => [],
                 'delete' => [],
             ];
+            $hasChanges = true;
         }
 
         foreach ($original['attributes'] as $attribute => $oValues) {
@@ -218,12 +279,29 @@ class Worker
             $cValues = $current['attributes'][$attribute];
 
             $changeSet['attributes'][$attribute] = [
-                'add' => \array_diff($cValues, $oValues),
+                'add' => \array_values(\array_diff($cValues, $oValues)),
                 'keep' => \array_intersect($oValues, $cValues),
-                'delete' => \array_diff($oValues, $cValues),
+                'delete' => \array_values(\array_diff($oValues, $cValues)),
             ];
 
+            if (!empty($changeSet['attributes'][$attribute]['add']) or !empty($changeSet['attributes'][$attribute]['delete'])) {
+                $hasChanges = true;
+            }
         }
+
+        return $hasChanges ? $changeSet : null;
+    }
+
+    private function getInverseChangeSet(array $changeSet, string $originalDn)
+    {
+        $delete = [];
+        foreach ($changeSet['attributes'] as $attribute => &$changes) {
+            $delete = $changes['delete'];
+            $changes['delete'] = $changes['add'];
+            $changes['add'] = $delete;
+        }
+
+        $changeSet['dn'] = $changeSet['dn'] ? $originalDn : null;
 
         return $changeSet;
     }

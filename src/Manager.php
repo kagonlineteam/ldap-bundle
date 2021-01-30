@@ -7,6 +7,7 @@ use KAGOnlineTeam\LdapBundle\Metadata\ClassMetadata;
 use KAGOnlineTeam\LdapBundle\Metadata\Factory\MetadataFactoryInterface;
 use KAGOnlineTeam\LdapBundle\Query\Query;
 use KAGOnlineTeam\LdapBundle\Request\RequestInterface;
+use KAGOnlineTeam\LdapBundle\Response;
 use KAGOnlineTeam\LdapBundle\Response\ResponseInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
@@ -64,5 +65,20 @@ class Manager implements ManagerInterface
     public function query(RequestInterface $request): ResponseInterface
     {
         return $this->connection->execute($request);
+    }
+
+    /**
+     * Tightly coupled with Worker::createRequests().
+     */
+    public function update(\Generator $reqGen): void
+    {
+        $reqGen->rewind();
+        while ($reqGen->valid()) {
+            $response = $this->connection->execute($reqGen->current());
+            if ($response instanceof Response\FailureResponse) {
+                $reqGen->throw(new \Exception($response->getMessage()));
+            }
+            $reqGen->next();
+        }
     }
 }

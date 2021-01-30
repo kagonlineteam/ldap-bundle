@@ -10,12 +10,14 @@ abstract class AbstractRepository implements RepositoryInterface
 {
     private $manager;
     private $metadata;
+    private $worker;
 
-    public function __construct(ManagerInterface $manager, string $class)
+    public function __construct(ManagerInterface $manager, string $class, Worker $worker = null)
     {
         $this->manager = $manager;
         $this->metadata = $manager->getMetadata($class);
-        $this->worker = new Worker($this->metadata);
+
+        $this->worker = $worker ?: new Worker($this->metadata);
     }
 
     /**
@@ -80,11 +82,7 @@ abstract class AbstractRepository implements RepositoryInterface
      */
     public function commit(): void
     {
-        foreach ($this->worker->createRequests() as $request) {
-            $this->worker->update(
-                $this->manager->query($request)
-            );
-        }
+        $this->manager->update($this->worker->createRequests());
     }
 
     /**

@@ -13,12 +13,11 @@ class DummyUserRepository extends AbstractRepository
         parent::__construct($manager, DummyUser::class);
     }
 
-    public function findByRole(string $role): array
+    public function findByName(string $name): iterable
     {
         $query = $this->createQueryBuilder()
             ->filterEquality()
-                ->on('roles')
-                ->with($role)
+                ->with('name', $name)
             ->end()
             ->scope(Options::SCOPE_SUB)
             ->make();

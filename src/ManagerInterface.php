@@ -44,4 +44,6 @@ interface ManagerInterface
      * 
      */
     public function query(RequestInterface $request): ResponseInterface;
+
+    public function update(\Generator $reqGen): void;
 }

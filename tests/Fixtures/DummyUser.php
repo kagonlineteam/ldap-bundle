@@ -33,7 +33,7 @@ class DummyUser
 
     private $other;
 
-    public function __construct(string $dn, $username, $name)
+    public function __construct(string $dn, array $username, array $name)
     {
         $this->dn = $dn;
         $this->username = $username;
@@ -56,8 +56,8 @@ class DummyUser
         return $this->name;
     }
 
-    public function setName(string $name): void
+    public function setName(array $names): void
     {
-        $this->name = [$name];
+        $this->name = $names;
     }
 }
