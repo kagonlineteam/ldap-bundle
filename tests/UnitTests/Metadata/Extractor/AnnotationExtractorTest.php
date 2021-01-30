@@ -20,8 +20,10 @@ class AnnotationExtractorTest extends TestCase
         $entryAnnotation->repositoryClass = 'RepositoryClass';
         $entryAnnotation->objectClasses = ['top', 'device'];
         $dnAnnotation = $this->prophesize(Annotation\DistinguishedName::class);
+        $dnAnnotation->type = 'string';
         $attributeAnnotation = $this->prophesize(Annotation\Attribute::class);
         $attributeAnnotation->description = 'uid';
+        $attributeAnnotation->type = 'scalar';
 
         $reader = $this->prophesize(AnnotationReader::class);
         $reader->getClassAnnotations(Argument::which('getName', DummyUser::class))->willReturn([$entryAnnotation->reveal()])->shouldBeCalled();
@@ -34,10 +36,9 @@ class AnnotationExtractorTest extends TestCase
         $metadata->getClass()->willReturn(DummyUser::class);
         $metadata->setRepositoryClass('RepositoryClass')->shouldBeCalled();
         $metadata->setObjectClasses(['top', 'device'])->shouldBeCalled();
-        $metadata->setDn(new DnMetadata('dn'))->shouldBeCalled();
+        $metadata->setDn(new DnMetadata('dn', 'string'))->shouldBeCalled();
 
-        $propertyMetadata = new PropertyMetadata('username');
-        $propertyMetadata->setAttribute('uid');
+        $propertyMetadata = new PropertyMetadata('username', 'uid', 'scalar');
         $metadata->setProperties(Argument::exact([$propertyMetadata]))->shouldBeCalled();
 
         $extractor = new AnnotationExtractor($reader->reveal());

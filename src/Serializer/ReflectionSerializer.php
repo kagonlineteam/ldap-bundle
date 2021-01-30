@@ -3,6 +3,10 @@
 namespace KAGOnlineTeam\LdapBundle\Serializer;
 
 use KAGOnlineTeam\LdapBundle\Metadata\ClassMetadata;
+use KAGOnlineTeam\LdapBundle\Metadata\DnMetadata;
+use KAGOnlineTeam\LdapBundle\Metadata\PropertyMetadata;
+use KAGOnlineTeam\LdapBundle\Attribute\DistinguishedName;
+use KAGOnlineTeam\LdapBundle\Attribute\MultiValue;
 
 class ReflectionSerializer
 {
@@ -22,7 +26,17 @@ class ReflectionSerializer
         if (!$refl->isPublic()) {
             $refl->setAccessible(true);
         }
-        $refl->setValue($object, $dn);
+        switch ($this->metadata->getDn()->getType()) {
+            case DnMetadata::TYPE_STRING:
+                $dnValue = $dn;
+                break;
+            case DnMetadata::TYPE_OBJECT:
+                $dnValue = DistinguishedName::deserialize($dn);
+                break;
+            default:
+                throw new \RuntimeException('Cannot denormalize with invalid property type.');
+        }
+        $refl->setValue($object, $dnValue);
 
         foreach ($this->metadata->getProperties() as $property) {
             if (!\array_key_exists($property->getAttribute(), $attributes)) {
@@ -33,7 +47,26 @@ class ReflectionSerializer
             if (!$refl->isPublic()) {
                 $refl->setAccessible(true);
             }
-            $refl->setValue($object, $attributes[$property->getAttribute()]);
+
+            switch ($property->getType()) {
+                case PropertyMetadata::TYPE_ARRAY:
+                    $value = $attributes[$property->getAttribute()];
+                    break;
+                case PropertyMetadata::TYPE_SCALAR:
+                    $values = $attributes[$property->getAttribute()];
+                    if (empty($values)) {
+                        $value = null;
+                    } else {
+                        $value = \reset($values);
+                    }
+                    break;
+                case PropertyMetadata::TYPE_MULIVALUE:
+                    $value = MultiValue::deserialize($attributes[$property->getAttribute()]);
+                    break;
+                default:
+                    throw new \RuntimeException('Cannot denormalize with invalid property type.');
+            }
+            $refl->setValue($object, $value);
         }
 
         return $object;
@@ -53,8 +86,20 @@ class ReflectionSerializer
                 $refl->setAccessible(true);
             }
 
-            $val = $refl->getValue($object);
-            $attributes[$property->getAttribute()] = \is_array($val) ? $val : [$val];
+            switch ($property->getType()) {
+                case PropertyMetadata::TYPE_ARRAY:
+                    $value = $refl->getValue($object);
+                    break;
+                case PropertyMetadata::TYPE_SCALAR:
+                    $value = [$refl->getValue($object)];
+                    break;
+                case PropertyMetadata::TYPE_MULIVALUE:
+                    $value = $value = $refl->getValue($object)->serialize();
+                    break;
+                default:
+                    throw new \RuntimeException('Cannot normalize with invalid property type.');
+            }
+            $attributes[$property->getAttribute()] = $value;
         }
 
         return [

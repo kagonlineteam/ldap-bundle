@@ -37,12 +37,10 @@ class ManagerInterfaceTest extends KernelTestCase
         $this->assertSame(DummyUser::class, $metadata->getClass());
         $this->assertSame('KAGOnlineTeam\\LdapBundle\\Tests\\Fixtures\\DummyUserRepository', $metadata->getRepositoryClass());
         $this->assertSame(['inetOrgPerson', 'person', 'top'], $metadata->getObjectClasses());
-        $this->assertEquals(new DnMetadata('dn'), $metadata->getDn());
+        $this->assertEquals(new DnMetadata('dn', 'string'), $metadata->getDn());
 
-        $usernameProperty = new PropertyMetadata('username');
-        $usernameProperty->setAttribute('uid');
-        $nameProperty = new PropertyMetadata('name');
-        $nameProperty->setAttribute('givenName');
+        $usernameProperty = new PropertyMetadata('username', 'uid', 'array');
+        $nameProperty = new PropertyMetadata('name', 'givenName', 'array');
         $this->assertEquals([$usernameProperty, $nameProperty], $metadata->getProperties());
     }
 

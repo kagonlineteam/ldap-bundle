@@ -10,10 +10,16 @@ namespace KAGOnlineTeam\LdapBundle\Annotation;
  * @Annotation
  * @Target({"PROPERTY"})
  * @Attributes(
- *     @Attribute("description", type="string", required=true)
+ *     @Attribute("description", type="string", required=true),
+ *     @Attribute("type", type="string", required=true),
  * )
  */
 class Attribute
 {
     public $description;
+
+    /**
+     * @Enum({"array", "scalar", "multivalue"})
+     */
+    public $type;
 }

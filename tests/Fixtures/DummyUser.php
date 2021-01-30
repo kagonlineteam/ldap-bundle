@@ -17,17 +17,25 @@ use KAGOnlineTeam\LdapBundle\Annotation as Ldap;
 class DummyUser
 {
     /**
-     * @Ldap\DistinguishedName()
+     * @Ldap\DistinguishedName(
+     *     type="string"
+     * )
      */
     private $dn;
 
     /**
-     * @Ldap\Attribute(description="uid")
+     * @Ldap\Attribute(
+     *     description="uid",
+     *     type="array"
+     * )
      */
     private $username;
 
     /**
-     * @Ldap\Attribute(description="givenName")
+     * @Ldap\Attribute(
+     *     description="givenName",
+     *     type="array"
+     * )
      */
     private $name;
 

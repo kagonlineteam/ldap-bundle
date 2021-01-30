@@ -30,13 +30,16 @@ class ReflectionSerializerTest extends TestCase
         $usernameProperty = $this->prophesize(PropertyMetadata::class);
         $usernameProperty->getProperty()->willReturn('username');
         $usernameProperty->getAttribute()->willReturn('uid');
+        $usernameProperty->getType()->willReturn('array');
 
         $nameProperty = $this->prophesize(PropertyMetadata::class);
         $nameProperty->getProperty()->willReturn('name');
         $nameProperty->getAttribute()->willReturn('givenName');
+        $nameProperty->getType()->willReturn('array');
 
         $dn = $this->prophesize(DnMetadata::class);
         $dn->getProperty()->willReturn('dn');
+        $dn->getType()->willReturn('string');
 
         $metadata = $this->prophesize(ClassMetadata::class);
         $metadata->getClass()->willReturn(DummyUser::class);

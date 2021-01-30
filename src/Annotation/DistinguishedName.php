@@ -9,7 +9,14 @@ namespace KAGOnlineTeam\LdapBundle\Annotation;
  *
  * @Annotation
  * @Target({"PROPERTY"})
+ * @Attributes(
+ *     @Attribute("type", type="string", required=true),
+ * )
  */
 class DistinguishedName
 {
+    /**
+     * @Enum({"string", "object"})
+     */
+    public $type;
 }

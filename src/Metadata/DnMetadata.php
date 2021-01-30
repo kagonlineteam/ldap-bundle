@@ -7,15 +7,29 @@ namespace KAGOnlineTeam\LdapBundle\Metadata;
  */
 class DnMetadata
 {
-    private $property;
+    const TYPE_STRING = 'string';
+    const TYPE_OBJECT = 'object';
 
-    public function __construct(string $property)
+    private $property;
+    private $type;
+
+    public function __construct(string $property, string $type)
     {
         $this->property = $property;
+
+        if (!\in_array($type, [self::TYPE_STRING, self::TYPE_OBJECT])) {
+            throw new \InvalidArgumentException('Unknown DN type given.');
+        }
+        $this->type = $type;
     }
 
     public function getProperty(): string
     {
         return $this->property;
+    }
+
+    public function getType(): string
+    {
+        return $this->type;
     }
 }
