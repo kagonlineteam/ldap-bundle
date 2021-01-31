@@ -65,20 +65,20 @@ class DistinguishedNameTest extends TestCase
     {
         return [
             ['',
-                []
+                [],
             ],
-            ['ou=users,ou=system', 
+            ['ou=users,ou=system',
                 [
-                    [['ou', 'users']], 
-                    [['ou', 'system']]
-                ] 
+                    [['ou', 'users']],
+                    [['ou', 'system']],
+                ],
             ],
-            ['cn=Joachim\\20Mueller+telephoneNumber=023441233,ou=users,ou=system', 
+            ['cn=Joachim\\20Mueller+telephoneNumber=023441233,ou=users,ou=system',
                 [
-                    [['cn', 'Joachim Mueller'], ['telephoneNumber', '023441233']], 
-                    [['ou', 'users']], 
-                    [['ou', 'system']]
-                ]
+                    [['cn', 'Joachim Mueller'], ['telephoneNumber', '023441233']],
+                    [['ou', 'users']],
+                    [['ou', 'system']],
+                ],
             ],
         ];
     }
@@ -86,19 +86,19 @@ class DistinguishedNameTest extends TestCase
     public function provideSerialize()
     {
         return [
-            [ 
+            [
                 [
-                    [['ou', 'users']], 
-                    [['ou', 'system']]
-                ] 
-            , 'ou=users,ou=system'],
-            [ 
+                    [['ou', 'users']],
+                    [['ou', 'system']],
+                ], 'ou=users,ou=system',
+            ],
+            [
                 [
-                    [['cn', 'Joachim Mueller'], ['telephoneNumber', '023441233']], 
-                    [['ou', 'users']], 
-                    [['ou', 'system']]
-                ]
-            , 'cn=Joachim Mueller+telephoneNumber=023441233,ou=users,ou=system'],
+                    [['cn', 'Joachim Mueller'], ['telephoneNumber', '023441233']],
+                    [['ou', 'users']],
+                    [['ou', 'system']],
+                ], 'cn=Joachim Mueller+telephoneNumber=023441233,ou=users,ou=system',
+            ],
         ];
     }
 
@@ -106,16 +106,16 @@ class DistinguishedNameTest extends TestCase
     {
         return [
             [
-                'ou=users,ou=system', []
+                'ou=users,ou=system', [],
             ],
             [
-                'ou=users,ou=system', ['abc']
+                'ou=users,ou=system', ['abc'],
             ],
             [
-                'ou=users,ou=system', [['rrrrr']]
+                'ou=users,ou=system', [['rrrrr']],
             ],
             [
-                'ou=users,ou=system', [['', [1, 2, 3]], []]
+                'ou=users,ou=system', [['', [1, 2, 3]], []],
             ],
         ];
     }
@@ -124,10 +124,10 @@ class DistinguishedNameTest extends TestCase
     {
         return [
             [
-                'ou=users,ou=system', [['uid', 'FMax']], 'uid=FMax,ou=users,ou=system'
+                'ou=users,ou=system', [['uid', 'FMax']], 'uid=FMax,ou=users,ou=system',
             ],
             [
-                'ou=users,ou=system', [['uid', 'FMax'], ['telephoneNumber', '0245987622']], 'uid=FMax+telephoneNumber=0245987622,ou=users,ou=system'
+                'ou=users,ou=system', [['uid', 'FMax'], ['telephoneNumber', '0245987622']], 'uid=FMax+telephoneNumber=0245987622,ou=users,ou=system',
             ],
         ];
     }

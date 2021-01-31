@@ -12,6 +12,6 @@ class FailureResponseTest extends TestCase
         $message = 'Cannot contact the Ldap server.';
         $response = new FailureResponse($message);
 
-        $this->assertSame($message, $response->getResponse());
+        $this->assertSame($message, $response->getMessage());
     }
 }

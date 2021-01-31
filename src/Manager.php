@@ -7,7 +7,6 @@ use KAGOnlineTeam\LdapBundle\Metadata\ClassMetadata;
 use KAGOnlineTeam\LdapBundle\Metadata\Factory\MetadataFactoryInterface;
 use KAGOnlineTeam\LdapBundle\Query\Query;
 use KAGOnlineTeam\LdapBundle\Request\RequestInterface;
-use KAGOnlineTeam\LdapBundle\Response;
 use KAGOnlineTeam\LdapBundle\Response\ResponseInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 

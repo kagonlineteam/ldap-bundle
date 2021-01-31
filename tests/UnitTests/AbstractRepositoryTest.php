@@ -4,8 +4,8 @@ namespace KAGOnlineTeam\LdapBundle\Tests\UnitTests;
 
 use KAGOnlineTeam\LdapBundle\AbstractRepository;
 use KAGOnlineTeam\LdapBundle\ManagerInterface;
-use KAGOnlineTeam\LdapBundle\Worker;
 use KAGOnlineTeam\LdapBundle\Metadata\ClassMetadata;
+use KAGOnlineTeam\LdapBundle\Worker;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 
@@ -26,6 +26,7 @@ class AbstractRepositoryTest extends TestCase
         $worker->createRequests()->will(function () {
             yield 'value';
             yield 'return';
+
             return;
         })->shouldBeCalledTimes(1);
 
@@ -43,4 +44,3 @@ class AbstractRepositoryTestClass extends AbstractRepository
         parent::__construct($manager, 'App\\Entity\\Device', $worker);
     }
 }
-

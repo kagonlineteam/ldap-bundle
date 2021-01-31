@@ -14,23 +14,10 @@ interface RepositoryInterface
      */
     public function getClass(): string;
 
-    /**
-     * 
-     *
-     * @param string $dn
-     *
-     * @return object|null  
-     */
     public function find(string $dn): ?object;
 
-    /**
-     * 
-     */
     public function findAll(): iterable;
 
-    /**
-     * 
-     */
     public function persist(object $entry): void;
 
     public function remove(object $entry): void;

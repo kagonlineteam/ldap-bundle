@@ -2,8 +2,8 @@
 
 namespace KAGOnlineTeam\LdapBundle\Tests\Fixtures;
 
-use KAGOnlineTeam\LdapBundle\ManagerInterface;
 use KAGOnlineTeam\LdapBundle\AbstractRepository;
+use KAGOnlineTeam\LdapBundle\ManagerInterface;
 use KAGOnlineTeam\LdapBundle\Query\Options;
 
 class DummyUserRepository extends AbstractRepository

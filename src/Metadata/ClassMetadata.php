@@ -17,8 +17,8 @@ class ClassMetadata
 
     public function __construct(string $class)
     {
-        if (!\class_exists($class)) {
-            throw new \InvalidArgumentException(\sprintf('The class "%s" does not exist.', $class));
+        if (!class_exists($class)) {
+            throw new \InvalidArgumentException(sprintf('The class "%s" does not exist.', $class));
         }
 
         $this->class = $class;

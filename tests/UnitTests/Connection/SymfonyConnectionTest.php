@@ -3,23 +3,22 @@
 namespace KAGOnlineTeam\LdapBundle\Tests\UnitTests\Connection;
 
 use KAGOnlineTeam\LdapBundle\Connection\SymfonyConnection;
-use KAGOnlineTeam\LdapBundle\Request\RequestInterface;
-use KAGOnlineTeam\LdapBundle\Request\QueryRequest;
-use KAGOnlineTeam\LdapBundle\Request\NewEntryRequest;
-use KAGOnlineTeam\LdapBundle\Request\UpdateRequest;
 use KAGOnlineTeam\LdapBundle\Request\DeleteRequest;
+use KAGOnlineTeam\LdapBundle\Request\NewEntryRequest;
+use KAGOnlineTeam\LdapBundle\Request\QueryRequest;
+use KAGOnlineTeam\LdapBundle\Request\RequestInterface;
+use KAGOnlineTeam\LdapBundle\Request\UpdateRequest;
 use KAGOnlineTeam\LdapBundle\Response\EntriesResponse;
-use KAGOnlineTeam\LdapBundle\Response\SuccessResponse;
 use KAGOnlineTeam\LdapBundle\Response\FailureResponse;
-use Symfony\Component\Ldap\LdapInterface;
-use Symfony\Component\Ldap\Entry;
+use KAGOnlineTeam\LdapBundle\Response\SuccessResponse;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Ldap\Adapter\CollectionInterface;
-use Symfony\Component\Ldap\Adapter\QueryInterface;
 use Symfony\Component\Ldap\Adapter\ExtLdap\EntryManager;
 use Symfony\Component\Ldap\Adapter\ExtLdap\UpdateOperation;
+use Symfony\Component\Ldap\Adapter\QueryInterface;
+use Symfony\Component\Ldap\Entry;
 use Symfony\Component\Ldap\Exception\LdapException;
-use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
+use Symfony\Component\Ldap\LdapInterface;
 
 class SymfonyConnectionTest extends TestCase
 {
@@ -30,7 +29,7 @@ class SymfonyConnectionTest extends TestCase
 
         $connection = new SymfonyConnection($ldap->reveal(), 'cn=admin,dc=example,dc=com?passwd', 'ou=users');
         $this->assertSame('ou=users', $connection->getBaseDn());
-        
+
         $this->expectException(\RuntimeException::class);
         $request = $this->prophesize(RequestInterface::class);
         $connection->execute($request->reveal());
@@ -101,7 +100,6 @@ class SymfonyConnectionTest extends TestCase
 
         $this->assertEquals(new FailureResponse('Entry could not be added.'), $response);
     }
-
 
     public function testUpdate(): void
     {

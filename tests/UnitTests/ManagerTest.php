@@ -2,13 +2,13 @@
 
 namespace KAGOnlineTeam\LdapBundle\Tests\UnitTests;
 
-use KAGOnlineTeam\LdapBundle\Metadata\Factory\MetadataFactoryInterface;
-use KAGOnlineTeam\LdapBundle\Metadata\ClassMetadata;
 use KAGOnlineTeam\LdapBundle\Connection\ConnectionInterface;
-use KAGOnlineTeam\LdapBundle\Request\RequestInterface;
-use KAGOnlineTeam\LdapBundle\Response\ResponseInterface;
-use KAGOnlineTeam\LdapBundle\Response\FailureResponse;
 use KAGOnlineTeam\LdapBundle\Manager;
+use KAGOnlineTeam\LdapBundle\Metadata\ClassMetadata;
+use KAGOnlineTeam\LdapBundle\Metadata\Factory\MetadataFactoryInterface;
+use KAGOnlineTeam\LdapBundle\Request\RequestInterface;
+use KAGOnlineTeam\LdapBundle\Response\FailureResponse;
+use KAGOnlineTeam\LdapBundle\Response\ResponseInterface;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 
@@ -90,7 +90,7 @@ class TestUpdateGeneratorClass
         } catch (\Exception $e) {
             while ($key >= 0) {
                 yield static::$fallbacks[$key];
-                $key--;
+                --$key;
             }
         }
     }

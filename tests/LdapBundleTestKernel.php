@@ -30,14 +30,14 @@ class LdapBundleTestKernel extends BaseKernel
         $this->extraBundles = $bundles;
         $this->compilerPasses = $compilerPasses;
 
-        $this->compilerPasses[] = new class($publicServices) implements CompilerPassInterface
-        {
+        $this->compilerPasses[] = new class($publicServices) implements CompilerPassInterface {
             private $definitions;
+
             public function __construct(array $definitions)
             {
                 $this->definitions = $definitions;
             }
-        
+
             public function process(ContainerBuilder $container)
             {
                 foreach ($this->definitions as $definition) {
@@ -52,7 +52,7 @@ class LdapBundleTestKernel extends BaseKernel
 
     public function registerBundles(): iterable
     {
-        return \array_merge(
+        return array_merge(
             $this->extraBundles,
             [
                 new FrameworkBundle(),
@@ -87,7 +87,7 @@ class LdapBundleTestKernel extends BaseKernel
                 [
                     'ldap_url' => 'ldaps://example.com:636',
                     'ldap_bind' => 'cn=administrator,dc=example,dc=com?passphrase',
-                    'base_dn' => 'ou=users,ou=system'
+                    'base_dn' => 'ou=users,ou=system',
                 ]
             );
 
@@ -110,12 +110,12 @@ class LdapBundleTestKernel extends BaseKernel
 
     public function getCacheDir()
     {
-        return \sys_get_temp_dir().\DIRECTORY_SEPARATOR.'LdapBundleTests'.\spl_object_hash($this).\DIRECTORY_SEPARATOR.'cache';
+        return sys_get_temp_dir().\DIRECTORY_SEPARATOR.'LdapBundleTests'.spl_object_hash($this).\DIRECTORY_SEPARATOR.'cache';
     }
 
     public function getLogDir()
     {
-        return \sys_get_temp_dir().\DIRECTORY_SEPARATOR.'LdapBundleTests'.\spl_object_hash($this).\DIRECTORY_SEPARATOR.'logs';
+        return sys_get_temp_dir().\DIRECTORY_SEPARATOR.'LdapBundleTests'.spl_object_hash($this).\DIRECTORY_SEPARATOR.'logs';
     }
 
     protected function build(ContainerBuilder $container)

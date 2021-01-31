@@ -2,11 +2,9 @@
 
 namespace KAGOnlineTeam\LdapBundle\Tests\UnitTests\Query\Filter;
 
-use KAGOnlineTeam\LdapBundle\Query\Filter\FilterInterface;
-use KAGOnlineTeam\LdapBundle\Query\Filter\NestedFilter;
 use KAGOnlineTeam\LdapBundle\Query\Filter\AbstractFilter;
+use KAGOnlineTeam\LdapBundle\Query\Filter\FilterInterface;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
 
 class AbstractFilterTest extends TestCase
 {
@@ -31,7 +29,7 @@ class AbstractFilterTest extends TestCase
 class AbstractFilterTestClass extends AbstractFilter
 {
     protected static $implementedTypes = [
-        0, 89
+        0, 89,
     ];
 
     public function resolve(callable $attrCall, callable $escCall): string
@@ -40,10 +38,12 @@ class AbstractFilterTestClass extends AbstractFilter
     }
 
     private $child;
-    public function addChild(FilterInterface $child): void 
+
+    public function addChild(FilterInterface $child): void
     {
         $this->child = $child;
     }
+
     public function getChild()
     {
         return $this->child;

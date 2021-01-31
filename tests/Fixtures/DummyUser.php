@@ -55,7 +55,7 @@ class DummyUser
 
     public function setUsername(string $username): void
     {
-        $this->dn = \str_replace($this->username, $username, $this->dn);
+        $this->dn = str_replace($this->username, $username, $this->dn);
         $this->username = [$username];
     }
 

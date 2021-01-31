@@ -19,7 +19,7 @@ class UpdateRequest implements RequestInterface
      *         ]
      *         '<other-attribute> => ...
      *     ],
-     * ]
+     * ].
      *
      * @var array
      */

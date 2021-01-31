@@ -42,8 +42,9 @@ abstract class AbstractRepository implements RepositoryInterface
             ->scope(Options::SCOPE_BASE)
             ->make();
 
-        $entries = \iterator_to_array($this->execute($qb));
-        return \count($entries) === 0 ? null : $entries[0];
+        $entries = iterator_to_array($this->execute($qb));
+
+        return 0 === \count($entries) ? null : $entries[0];
     }
 
     /**

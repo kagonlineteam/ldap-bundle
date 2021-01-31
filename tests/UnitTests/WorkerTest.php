@@ -6,7 +6,6 @@ use KAGOnlineTeam\LdapBundle\Metadata\ClassMetadata;
 use KAGOnlineTeam\LdapBundle\Request;
 use KAGOnlineTeam\LdapBundle\Response\EntriesResponse;
 use KAGOnlineTeam\LdapBundle\Serializer\SerializerInterface;
-use KAGOnlineTeam\LdapBundle\Tests\Fixtures\DummyUser;
 use KAGOnlineTeam\LdapBundle\Worker;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
@@ -30,7 +29,7 @@ class WorkerTest extends TestCase
         $serializer->normalize(Argument::exact((object) ['sn' => ['Gallagher']]))->willReturn(['dn' => 'sn=Gallagher,ou=users,ou=system', 'objectclasses' => ['inetOrgPerson', 'person', 'top'], 'attributes' => ['sn' => ['Gallagher']]]);
 
         $worker = new Worker($metadata->reveal(), $serializer->reveal());
-        $this->assertSame([], \iterator_to_array($worker->fetchLatest()));
+        $this->assertSame([], iterator_to_array($worker->fetchLatest()));
 
         $response1 = $this->prophesize(EntriesResponse::class);
         $response1->getEntries()->willReturn([
@@ -40,9 +39,9 @@ class WorkerTest extends TestCase
         ]);
         $response1->isReadOnly()->willReturn(false);
         $worker->update($response1->reveal());
-        
-        $this->assertEquals([$gallagher, $john], \iterator_to_array($worker->fetchLatest()));
-        $this->assertSame([], \iterator_to_array($worker->fetchLatest()));
+
+        $this->assertEquals([$gallagher, $john], iterator_to_array($worker->fetchLatest()));
+        $this->assertSame([], iterator_to_array($worker->fetchLatest()));
 
         $response2 = $this->prophesize(EntriesResponse::class);
         $response2->getEntries()->willReturn([
@@ -52,10 +51,10 @@ class WorkerTest extends TestCase
         $response2->isReadOnly()->willReturn(true);
         $worker->update($response2->reveal());
 
-        $this->assertEquals([$williams], \iterator_to_array($worker->fetchLatest()));
+        $this->assertEquals([$williams], iterator_to_array($worker->fetchLatest()));
 
         $williams->sn = ['Bill'];
-        $this->assertSame([], \iterator_to_array($worker->createRequests()));
+        $this->assertSame([], iterator_to_array($worker->createRequests()));
     }
 
     public function testMark(): void
@@ -71,7 +70,7 @@ class WorkerTest extends TestCase
             ['uid=User,ou=users', ['top', 'person'], ['cn' => ['User']]],
         ]);
         $response->isReadOnly()->willReturn(false);
-        
+
         $worker = new Worker($metadata->reveal(), $serializer->reveal());
         $worker->update($response->reveal());
         $user = $worker->fetchLatest();
@@ -86,6 +85,7 @@ class WorkerTest extends TestCase
         $serializer->denormalize(Argument::type('string'), Argument::type('array'))->will(function ($args) {
             $object = (object) $args[1];
             $object->dn = $args[0];
+
             return $object;
         });
         $serializer->normalize(Argument::type(\stdClass::class))->will(function ($args) {
@@ -111,7 +111,7 @@ class WorkerTest extends TestCase
         ]);
         $response->isReadOnly()->willReturn(false);
         $worker->update($response->reveal());
-        
+
         $expectedFetch = [
             (object) ['dn' => 'sn=Garcia,ou=users,ou=system', 'sn' => ['Garcia'], 'givenName' => ['Alicee']],
             (object) ['dn' => 'sn=Jones,ou=users,ou=system', 'sn' => ['Jones'], 'givenName' => ['Luke']],
@@ -119,7 +119,7 @@ class WorkerTest extends TestCase
             (object) ['dn' => 'sn=Gallagher,ou=users,ou=system', 'sn' => ['Gallagher'], 'givenName' => ['Liam']],
             (object) ['dn' => 'sn=Smith,ou=users,ou=system', 'sn' => ['Smith'], 'givenName' => ['Noah']],
         ];
-        $this->assertEquals($expectedFetch, ($entries = \iterator_to_array($worker->fetchLatest())));
+        $this->assertEquals($expectedFetch, ($entries = iterator_to_array($worker->fetchLatest())));
 
         $entries[0]->givenName = ['Alice'];
 
@@ -136,6 +136,6 @@ class WorkerTest extends TestCase
         ]), $generator->current());
 
         $generator->next();
-        $this->assertSame(false, $generator->valid());
+        $this->assertFalse($generator->valid());
     }
 }

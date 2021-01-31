@@ -25,9 +25,6 @@ interface ConnectionInterface
      */
     public function disconnect(): void;
 
-    /**
-     * @return string 
-     */
     public function getBaseDn(): string;
 
     /**

@@ -4,7 +4,7 @@ namespace KAGOnlineTeam\LdapBundle\Attribute;
 
 /**
  * A basic implementation of an attribute which allows multiple values.
- * 
+ *
  * @author Jan Flaßkamp
  */
 class MultiValue
@@ -17,36 +17,24 @@ class MultiValue
         $this->original = $this->values = $values;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public static function deserialize(array $values)
     {
         return new self($values);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function serialize(): array
     {
         return $this->values;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function refresh(): AttributeInterface
+    public function refresh(): self
     {
         $this->original = $this->values;
 
         return $this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function reset(): AttributeInterface
+    public function reset(): self
     {
         $this->values = $this->original;
 
@@ -65,6 +53,7 @@ class MultiValue
         }
 
         $firstKey = array_keys($this->values)[0];
+
         return $this->values[$firstKey];
     }
 

@@ -40,7 +40,6 @@ class AnnotationExtractor implements ExtractorInterface
         foreach ($reflection->getProperties() as $property) {
             if ($property->getDeclaringClass()->name === $metadata->getClass()) {
                 foreach ($this->reader->getPropertyAnnotations($property) as $annotation) {
-                    
                     if ($annotation instanceof Annotation\DistinguishedName) {
                         $metadata->setDn(new DnMetadata($property->getName(), $annotation->type));
                     } elseif ($annotation instanceof Annotation\Attribute) {

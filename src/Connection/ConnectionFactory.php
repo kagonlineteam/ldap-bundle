@@ -28,10 +28,9 @@ class ConnectionFactory
     {
         if (\is_string($this->type)) {
             if (\array_key_exists($this->type, self::$aliasMap)) {
-
                 switch ($this->type) {
                     case 'symfony_ldap':
-                        return new static::$aliasMap[$this->type](Ldap::create('ext_ldap', ['connection_string' => $this->ldapUrl]), $this->credentials, $this->baseDn);   
+                        return new static::$aliasMap[$this->type](Ldap::create('ext_ldap', ['connection_string' => $this->ldapUrl]), $this->credentials, $this->baseDn);
                 }
             } else {
                 if (!class_exists($this->type)) {
@@ -44,8 +43,9 @@ class ConnectionFactory
                 }
 
                 $class = $this->type;
+
                 return new $class($this->ldapUrl, $this->credentials);
-            }  
+            }
         }
 
         if (\is_callable($this->type)) {

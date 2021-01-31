@@ -29,20 +29,20 @@ abstract class LdapBundleKernelTestCase extends KernelTestCase
     protected function tearDown(): void
     {
         $dir = static::$kernel->getCacheDir();
-        if (\sys_get_temp_dir() !== \dirname($dir)) {
+        if (sys_get_temp_dir() !== \dirname($dir)) {
             $dir = \dirname($dir);
         }
 
         $it = new \RecursiveDirectoryIterator($dir, \RecursiveDirectoryIterator::SKIP_DOTS);
         $files = new \RecursiveIteratorIterator($it, \RecursiveIteratorIterator::CHILD_FIRST);
-        foreach($files as $file) {
-            if ($file->isDir()){
-                \rmdir($file->getRealPath());
+        foreach ($files as $file) {
+            if ($file->isDir()) {
+                rmdir($file->getRealPath());
             } else {
-                \unlink($file->getRealPath());
+                unlink($file->getRealPath());
             }
         }
-        \rmdir($dir);
+        rmdir($dir);
 
         parent::tearDown();
     }

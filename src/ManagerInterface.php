@@ -40,9 +40,6 @@ interface ManagerInterface
      */
     public function getRepositoryId(string $class): string;
 
-    /**
-     * 
-     */
     public function query(RequestInterface $request): ResponseInterface;
 
     public function update(\Generator $reqGen): void;

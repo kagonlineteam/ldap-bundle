@@ -2,11 +2,11 @@
 
 namespace KAGOnlineTeam\LdapBundle\Serializer;
 
+use KAGOnlineTeam\LdapBundle\Attribute\DistinguishedName;
+use KAGOnlineTeam\LdapBundle\Attribute\MultiValue;
 use KAGOnlineTeam\LdapBundle\Metadata\ClassMetadata;
 use KAGOnlineTeam\LdapBundle\Metadata\DnMetadata;
 use KAGOnlineTeam\LdapBundle\Metadata\PropertyMetadata;
-use KAGOnlineTeam\LdapBundle\Attribute\DistinguishedName;
-use KAGOnlineTeam\LdapBundle\Attribute\MultiValue;
 
 class ReflectionSerializer
 {
@@ -57,7 +57,7 @@ class ReflectionSerializer
                     if (empty($values)) {
                         $value = null;
                     } else {
-                        $value = \reset($values);
+                        $value = reset($values);
                     }
                     break;
                 case PropertyMetadata::TYPE_MULIVALUE:

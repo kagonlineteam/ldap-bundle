@@ -2,16 +2,16 @@
 
 namespace KAGOnlineTeam\LdapBundle\Connection;
 
-use KAGOnlineTeam\LdapBundle\Request\RequestInterface;
 use KAGOnlineTeam\LdapBundle\Request;
-use KAGOnlineTeam\LdapBundle\Response\ResponseInterface;
+use KAGOnlineTeam\LdapBundle\Request\RequestInterface;
 use KAGOnlineTeam\LdapBundle\Response;
-use Symfony\Component\Ldap\LdapInterface;
-use Symfony\Component\Ldap\Entry;
+use KAGOnlineTeam\LdapBundle\Response\ResponseInterface;
 use Symfony\Component\Ldap\Adapter\ExtLdap\UpdateOperation;
+use Symfony\Component\Ldap\Entry;
+use Symfony\Component\Ldap\LdapInterface;
 
 /**
- * An adapter for Symfonys Ldap component. 
+ * An adapter for Symfonys Ldap component.
  */
 class SymfonyConnection implements ConnectionInterface
 {
@@ -33,7 +33,7 @@ class SymfonyConnection implements ConnectionInterface
     }
 
     public function connect(): void
-    { 
+    {
     }
 
     public function disconnect(): void
@@ -55,15 +55,16 @@ class SymfonyConnection implements ConnectionInterface
         switch (\get_class($request)) {
             case Request\QueryRequest::class:
                 $iterator = $this->ldap->query(
-                    $request->getDn(), $request->getFilter(), $request->getOptions() 
+                    $request->getDn(), $request->getFilter(), $request->getOptions()
                 )->execute()->getIterator();
-    
+
                 return new Response\EntriesResponse($this->processCollection($iterator), $request->isReadOnly());
-            
+
             case Request\NewEntryRequest::class:
                 $manager = $this->ldap->getEntryManager();
                 try {
                     $manager->add(new Entry($request->getDn(), $request->getAttributes()));
+
                     return new Response\SuccessResponse();
                 } catch (\Exception $e) {
                     return new Response\FailureResponse($e->getMessage());
@@ -71,7 +72,7 @@ class SymfonyConnection implements ConnectionInterface
 
             case Request\UpdateRequest::class:
                 $manager = $this->ldap->getEntryManager();
-                try{
+                try {
                     if (null !== $request->getChangeSet()['dn']) {
                         $manager->remove(new Entry($request->getDn()));
 
@@ -79,19 +80,18 @@ class SymfonyConnection implements ConnectionInterface
                         try {
                             $attributes = ['objectClass' => $request->getChangeSet()['objectClass']];
                             foreach ($request->getChangeSet()['attributes'] as $attribute => $changes) {
-                                $attributes[$attribute] = \array_merge($changes['keep'], $changes['add']);
+                                $attributes[$attribute] = array_merge($changes['keep'], $changes['add']);
                             }
                             $manager->add(new Entry($request->getChangeSet()['dn'], $attributes));
                         } catch (\Exception $e) {
                             $attributes = ['objectClass' => $request->getChangeSet()['objectClass']];
                             foreach ($request->getChangeSet()['attributes'] as $attribute => $changes) {
-                                $attributes[$attribute] = \array_merge($changes['keep'], $changes['delete']);
+                                $attributes[$attribute] = array_merge($changes['keep'], $changes['delete']);
                             }
                             $manager->add(new Entry($request->getDn(), $attributes));
 
                             throw $e;
                         }
-
                     } else {
                         $operations = [];
                         foreach ($request->getChangeSet()['attributes'] as $attribute => $changes) {
@@ -113,21 +113,22 @@ class SymfonyConnection implements ConnectionInterface
                 $manager = $this->ldap->getEntryManager();
                 try {
                     $manager->remove(new Entry($request->getDn()));
+
                     return new Response\SuccessResponse();
                 } catch (\Exception $e) {
                     return new Response\FailureResponse($e->getMessage());
                 }
         }
 
-        throw new \RuntimeException(\sprintf('Undefined request of type "%s" given.', \get_class($request)));
+        throw new \RuntimeException(sprintf('Undefined request of type "%s" given.', \get_class($request)));
     }
 
     private function resolveBindCredentials(string $bindCredentials): void
     {
-        $i = \strpos($bindCredentials, '?');
+        $i = strpos($bindCredentials, '?');
         $this->credentials = [
-            \substr($bindCredentials, 0, $i),
-            \substr($bindCredentials, $i+1),
+            substr($bindCredentials, 0, $i),
+            substr($bindCredentials, $i + 1),
         ];
     }
 

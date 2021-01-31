@@ -18,7 +18,7 @@ class NewEntryRequest implements RequestInterface
         return $this->dn;
     }
 
-    public function getAttributes(): array 
+    public function getAttributes(): array
     {
         return $this->attributes;
     }

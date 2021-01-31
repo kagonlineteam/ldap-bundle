@@ -8,9 +8,9 @@ use KAGOnlineTeam\LdapBundle\Response;
 use KAGOnlineTeam\LdapBundle\Tests\Fixtures\DummyUser;
 use KAGOnlineTeam\LdapBundle\Tests\Fixtures\DummyUserRepository;
 use KAGOnlineTeam\LdapBundle\Tests\LdapBundleKernelTestCase as KernelTestCase;
+use Prophecy\Argument;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Prophecy\Argument;
 
 class RepositoryTest extends KernelTestCase
 {
@@ -55,9 +55,9 @@ class RepositoryTest extends KernelTestCase
                 'givenName' => [
                     'add' => [],
                     'keep' => ['Max'],
-                    'delete' => []
-                ]
-            ]
+                    'delete' => [],
+                ],
+            ],
         ]);
         $updateResponse = new Response\SuccessResponse();
 
@@ -141,9 +141,9 @@ class RepositoryTest extends KernelTestCase
                 'givenName' => [
                     'add' => [],
                     'keep' => ['John'],
-                    'delete' => []
-                ]
-            ]
+                    'delete' => [],
+                ],
+            ],
         ]);
         $updateRequest1 = new Request\UpdateRequest('uid=John12,ou=users,ou=system', [
             'dn' => null,
@@ -157,9 +157,9 @@ class RepositoryTest extends KernelTestCase
                 'givenName' => [
                     'add' => ['Peter'],
                     'keep' => ['John'],
-                    'delete' => []
-                ]
-            ]
+                    'delete' => [],
+                ],
+            ],
         ]);
         $updateRequest2 = new Request\UpdateRequest('uid=John12,ou=users,ou=system', [
             'dn' => null,
@@ -173,9 +173,9 @@ class RepositoryTest extends KernelTestCase
                 'givenName' => [
                     'add' => [],
                     'keep' => ['John'],
-                    'delete' => ['Peter']
-                ]
-            ]
+                    'delete' => ['Peter'],
+                ],
+            ],
         ]);
         $updateRequest3 = new Request\UpdateRequest('uid=J0hn,ou=users,ou=system', [
             'dn' => 'uid=Jn0,ou=users,ou=system',
@@ -189,14 +189,14 @@ class RepositoryTest extends KernelTestCase
                 'givenName' => [
                     'add' => [],
                     'keep' => ['John'],
-                    'delete' => []
-                ]
-            ]
+                    'delete' => [],
+                ],
+            ],
         ]);
         $newEntryRequest = new Request\NewEntryRequest('uid=John21,ou=users,ou=system', [
             'objectclass' => ['inetOrgPerson', 'person', 'top'],
             'uid' => ['John21'],
-            'givenName' => ['John']
+            'givenName' => ['John'],
         ]);
 
         $connection = $this->prophesize(ConnectionInterface::class);
@@ -220,8 +220,8 @@ class RepositoryTest extends KernelTestCase
         ]);
 
         $repository = static::$container->get(DummyUserRepository::class);
-        $users = \iterator_to_array($repository->findByName('John'));
-        
+        $users = iterator_to_array($repository->findByName('John'));
+
         $expectedUsers = [
             new DummyUser('uid=John00,ou=admin,ou=users,ou=system', ['John00'], ['John']),
             new DummyUser('uid=John,ou=users,ou=system', ['John'], ['John']),
@@ -244,7 +244,7 @@ class RepositoryTest extends KernelTestCase
                     break;
                 case 'John12':
                     $user->setName(['John', 'Peter']);
-                    break; 
+                    break;
             }
         }
 
@@ -259,6 +259,7 @@ class RepositoryTest extends KernelTestCase
 class ConnCallback
 {
     public static $conn;
+
     public static function getConn()
     {
         return static::$conn;
@@ -285,4 +286,3 @@ class RepositoryAutowireTest
     {
     }
 }
-

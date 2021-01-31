@@ -3,15 +3,15 @@
 namespace KAGOnlineTeam\LdapBundle\Attribute;
 
 /**
- * An OOP implementation of a distinguished name of a LDAP entry. 
- * 
+ * An OOP implementation of a distinguished name of a LDAP entry.
+ *
  * @author Jan Flaßkamp
  */
-class DistinguishedName 
+class DistinguishedName
 {
     /**
      * Holds all information of the original DN string in an array.
-     * 
+     *
      * The array consists of zero or more RDNs which are arrays by themselves.
      * To support multivalue RDNs a single RDN is an array of name-value pairs.
      * E.g. the dn "cn=John+employeeNumber=1,ou=users,ou=system" results in:
@@ -30,32 +30,29 @@ class DistinguishedName
 
     /**
      * Creates a new DN object from a DN string.
-     * 
-     * @return self
      */
     public static function deserialize(string $dn): self
     {
-        $rdns = \ldap_explode_dn($dn, 0);
+        $rdns = ldap_explode_dn($dn, 0);
 
         if (\is_array($rdns) && \array_key_exists('count', $rdns)) {
             unset($rdns['count']);
 
             foreach ($rdns as $key => $rdn) {
-
                 $rdns[$key] = [];
                 // Handle multivalued RDNs.
-                foreach (\explode('+', $rdn) as $value) {
-                    $pos = \strpos($value, '=');
+                foreach (explode('+', $rdn) as $value) {
+                    $pos = strpos($value, '=');
                     if (false === $pos) {
-                        throw new \InvalidArgumentException(\sprintf('Expected "=" in RDN ("%s").', $value));
+                        throw new \InvalidArgumentException(sprintf('Expected "=" in RDN ("%s").', $value));
                     }
 
-                    $name = \substr($value, 0, $pos);
+                    $name = substr($value, 0, $pos);
 
                     // Unescape characters.
-                    $value = \preg_replace_callback('/\\\([0-9A-Fa-f]{2})/', function ($matches) {
-                        return \chr(\hexdec($matches[1]));
-                    }, \substr($value, $pos+1));
+                    $value = preg_replace_callback('/\\\([0-9A-Fa-f]{2})/', function ($matches) {
+                        return \chr(hexdec($matches[1]));
+                    }, substr($value, $pos + 1));
 
                     $rdns[$key][] = [$name, $value];
                 }
@@ -67,7 +64,7 @@ class DistinguishedName
 
     /**
      * Returns the string representation of the DN object.
-     * 
+     *
      * @return string The DN string
      */
     public function serialize(): string
@@ -77,23 +74,22 @@ class DistinguishedName
         foreach ($this->rdns as $rdn) {
             $rdnPairs = [];
             foreach ($rdn as $pair) {
-
-                $value = \ldap_escape($pair[1], '', LDAP_ESCAPE_DN);
+                $value = ldap_escape($pair[1], '', LDAP_ESCAPE_DN);
                 if (!empty($value) && ' ' === $value[0]) {
-                    $value = '\\20'.\substr($value, 1);
+                    $value = '\\20'.substr($value, 1);
                 }
                 if (!empty($value) && ' ' === $value[\strlen($value) - 1]) {
-                    $value = \substr($value, 0, -1).'\\20';
+                    $value = substr($value, 0, -1).'\\20';
                 }
-                $value = \str_replace("\r", '\0d', $value);
+                $value = str_replace("\r", '\0d', $value);
 
                 $rdnPairs[] = $pair[0].'='.$value;
             }
 
-            $rdns[] = \implode('+', $rdnPairs);
+            $rdns[] = implode('+', $rdnPairs);
         }
 
-        return \implode(',', $rdns);
+        return implode(',', $rdns);
     }
 
     public function __toString()
@@ -103,7 +99,7 @@ class DistinguishedName
 
     /**
      * Returns all RDNs.
-     * 
+     *
      * @return array An array of RDNs
      */
     public function all(): array
@@ -114,8 +110,6 @@ class DistinguishedName
     /**
      * Returns the number of RDNs the DN contains. Multivalued RDNs will be
      * counted as one.
-     * 
-     * @return int
      */
     public function count(): int
     {
@@ -124,8 +118,6 @@ class DistinguishedName
 
     /**
      * Returns the first RDN as a string.
-     * 
-     * @return string
      */
     public function getRdn(): string
     {
@@ -142,23 +134,23 @@ class DistinguishedName
 
     /**
      * Returns a new DistinguishedName object of the parent entry.
-     * 
+     *
      * @throws LogicException If there is no parent entry
-     * 
+     *
      * @return DistinguishedName A new DN object of the parent entry
      */
-    public function getParent(): DistinguishedName
+    public function getParent(): self
     {
         if (empty($this->rdns)) {
             throw new LogicException('Cannot get the parent DN of the root entry.');
         }
 
-        return new DistinguishedName(\array_slice($this->rdns, 1));
+        return new self(\array_slice($this->rdns, 1));
     }
 
     /**
      * Changes into the DN of the parent.
-     * 
+     *
      * @return $this
      */
     public function removeRdn(): self
@@ -172,9 +164,9 @@ class DistinguishedName
 
     /**
      * Extends the distinguished name by adding a new RDN.
-     * 
-     * @param array $pairs 
-     * 
+     *
+     * @param array $pairs
+     *
      * @return $this
      */
     public function addRdn(...$pairs): self
@@ -187,8 +179,8 @@ class DistinguishedName
             if (!\is_array($pair)) {
                 throw new \InvalidArgumentException('A name-value pair must be of type array.');
             }
-            
-            if (\count($pair) !== 2) {
+
+            if (2 !== \count($pair)) {
                 throw new \InvalidArgumentException('A name-value pair must consist of exactly two elements.');
             }
 
@@ -197,7 +189,7 @@ class DistinguishedName
             }
         }
 
-        \array_unshift($this->rdns, $pairs);
+        array_unshift($this->rdns, $pairs);
 
         return $this;
     }
