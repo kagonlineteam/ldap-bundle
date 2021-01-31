@@ -87,6 +87,7 @@ class LdapBundleTestKernel extends BaseKernel
                 [
                     'ldap_url' => 'ldaps://example.com:636',
                     'ldap_bind' => 'cn=administrator,dc=example,dc=com?passphrase',
+                    'base_dn' => 'ou=users,ou=system'
                 ]
             );
 

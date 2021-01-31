@@ -12,6 +12,7 @@ class UpdateRequestTest extends TestCase
         $dn = 'cn=Mueller,ou=2020,ou=users,ou=system';
         $changeSet = [
             'dn' => 'cn=CMueller,ou=2020,ou=users,ou=system',
+            'objectClass' => ['top', 'person', 'inetOrgPerson'],
             'attributes' => [
                 'cn' => [
                     'add' => ['CMueller'],

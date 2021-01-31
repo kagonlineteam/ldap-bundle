@@ -26,6 +26,7 @@ final class KAGOnlineTeamLdapExtension extends Extension
         $connection->setArgument(0, 'symfony_ldap');
         $connection->setArgument(1, $config['ldap_url']);
         $connection->setArgument(2, $config['ldap_bind']);
+        $connection->setArgument(3, $config['base_dn']);
     }
 
     public function getAlias()

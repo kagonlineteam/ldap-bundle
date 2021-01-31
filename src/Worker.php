@@ -3,9 +3,7 @@
 namespace KAGOnlineTeam\LdapBundle;
 
 use KAGOnlineTeam\LdapBundle\Metadata\ClassMetadata;
-use KAGOnlineTeam\LdapBundle\Request;
 use KAGOnlineTeam\LdapBundle\Response\EntriesResponse;
-use KAGOnlineTeam\LdapBundle\Response\ResponseInterface;
 use KAGOnlineTeam\LdapBundle\Serializer\ReflectionSerializer;
 use KAGOnlineTeam\LdapBundle\Serializer\SerializerInterface;
 
@@ -15,7 +13,7 @@ use KAGOnlineTeam\LdapBundle\Serializer\SerializerInterface;
 class Worker
 {
     /**
-     * State and marks provide information for usage in a bitmask about the state and commit actions of an instance. 
+     * State and marks provide information for usage in a bitmask about the state and commit actions of an instance.
      */
     const STATE_MANAGED = 1;
     const MARK_LOADED = 2;
@@ -29,7 +27,7 @@ class Worker
 
     /**
      * A list of all active instances with the object hash as array key.
-     * 
+     *
      * @var object[]
      */
     private $entries = [];
@@ -39,9 +37,9 @@ class Worker
      *     <spl-object-hash> => [
      *         'state' => The state (managed/unmanaged) and additional marks
      *         'original' => The original data set of the entry
-     *         'changes' => The currently used change set 
-     *     ]
-     * 
+     *         'changes' => The currently used change set
+     *     ].
+     *
      * @var array
      */
     private $data = [];
@@ -59,12 +57,12 @@ class Worker
     {
         foreach ($response->getEntries() as [$dn, $objectClasses, $attributes]) {
             // Check if all objectClasses are present.
-            if (!empty(\array_diff($this->metadata->getObjectClasses(), $objectClasses))) {
+            if (!empty(array_diff($this->metadata->getObjectClasses(), $objectClasses))) {
                 continue;
             }
 
             $entry = $this->serializer->denormalize($dn, $attributes);
-            $id = \spl_object_hash($entry);
+            $id = spl_object_hash($entry);
 
             $this->entries[$id] = $entry;
             $this->data[$id] = [
@@ -82,7 +80,7 @@ class Worker
     public function fetchLatest(): iterable
     {
         // Set the internal pointer to the last element and return if the array is empty.
-        if (false === \end($this->entries)) {
+        if (false === end($this->entries)) {
             return [];
         }
 
@@ -245,6 +243,7 @@ class Worker
     {
         $changeSet = [
             'dn' => $original['dn'] !== $current['dn'] ? $current['dn'] : null,
+            'objectClass' => $this->metadata->getObjectClasses(),
             'attributes' => [],
         ];
 

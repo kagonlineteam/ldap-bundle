@@ -45,6 +45,7 @@ class RepositoryTest extends KernelTestCase
 
         $updateRequest = new Request\UpdateRequest('uid=SomeUser,ou=users,ou=system', [
             'dn' => 'uid=OtherUser,ou=users,ou=system',
+            'objectClass' => ['inetOrgPerson', 'person', 'top'],
             'attributes' => [
                 'uid' => [
                     'add' => ['OtherUser'],
@@ -130,6 +131,7 @@ class RepositoryTest extends KernelTestCase
         $failureResponse = new Response\FailureResponse('Some error occurred.');
         $updateRequest0 = new Request\UpdateRequest('uid=Jn0,ou=users,ou=system', [
             'dn' => 'uid=J0hn,ou=users,ou=system',
+            'objectClass' => ['inetOrgPerson', 'person', 'top'],
             'attributes' => [
                 'uid' => [
                     'add' => ['J0hn'],
@@ -145,6 +147,7 @@ class RepositoryTest extends KernelTestCase
         ]);
         $updateRequest1 = new Request\UpdateRequest('uid=John12,ou=users,ou=system', [
             'dn' => null,
+            'objectClass' => ['inetOrgPerson', 'person', 'top'],
             'attributes' => [
                 'uid' => [
                     'add' => [],
@@ -160,6 +163,7 @@ class RepositoryTest extends KernelTestCase
         ]);
         $updateRequest2 = new Request\UpdateRequest('uid=John12,ou=users,ou=system', [
             'dn' => null,
+            'objectClass' => ['inetOrgPerson', 'person', 'top'],
             'attributes' => [
                 'uid' => [
                     'add' => [],
@@ -175,6 +179,7 @@ class RepositoryTest extends KernelTestCase
         ]);
         $updateRequest3 = new Request\UpdateRequest('uid=J0hn,ou=users,ou=system', [
             'dn' => 'uid=Jn0,ou=users,ou=system',
+            'objectClass' => ['inetOrgPerson', 'person', 'top'],
             'attributes' => [
                 'uid' => [
                     'add' => ['Jn0'],

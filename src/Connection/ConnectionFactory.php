@@ -2,28 +2,37 @@
 
 namespace KAGOnlineTeam\LdapBundle\Connection;
 
+use Symfony\Component\Ldap\Ldap;
+
 class ConnectionFactory
 {
     private static $aliasMap = [
         'symfony_ldap' => SymfonyConnection::class,
     ];
 
+    private $symLdapProxy;
     private $type;
     private $ldapUrl;
     private $credentials;
+    private $baseDn;
 
-    public function __construct($type, string $ldapUrl, string $credentials)
+    public function __construct($type, string $ldapUrl, string $credentials, string $baseDn = '')
     {
         $this->type = $type;
         $this->ldapUrl = $ldapUrl;
         $this->credentials = $credentials;
+        $this->baseDn = $baseDn;
     }
 
     public function getConnection(): ConnectionInterface
     {
         if (\is_string($this->type)) {
             if (\array_key_exists($this->type, self::$aliasMap)) {
-                $class = self::$aliasMap[$this->type];
+
+                switch ($this->type) {
+                    case 'symfony_ldap':
+                        return new static::$aliasMap[$this->type](Ldap::create('ext_ldap', ['connection_string' => $this->ldapUrl]), $this->credentials, $this->baseDn);   
+                }
             } else {
                 if (!class_exists($this->type)) {
                     throw new \InvalidArgumentException(sprintf('Undefined class "%s".', $this->type));
@@ -35,9 +44,8 @@ class ConnectionFactory
                 }
 
                 $class = $this->type;
-            }
-
-            return new $class($this->ldapUrl, $this->credentials);
+                return new $class($this->ldapUrl, $this->credentials);
+            }  
         }
 
         if (\is_callable($this->type)) {

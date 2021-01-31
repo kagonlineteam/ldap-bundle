@@ -10,6 +10,7 @@ class UpdateRequest implements RequestInterface
      * Format:
      * [
      *     'dn' => (string) The modified dn or null
+     *     'objectClass' => (array) The list of objectClass values
      *     'attributes' => [
      *         '<attribute> => [
      *             'add' => (array) New attribute values

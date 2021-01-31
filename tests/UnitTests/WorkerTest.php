@@ -128,6 +128,7 @@ class WorkerTest extends TestCase
 
         $this->assertEquals(new Request\UpdateRequest('sn=Garcia,ou=users,ou=system', [
             'dn' => null,
+            'objectClass' => ['person', 'top'],
             'attributes' => [
                 'sn' => ['add' => [], 'keep' => ['Garcia'], 'delete' => []],
                 'givenName' => ['add' => ['Alice'], 'keep' => [], 'delete' => ['Alicee']],
