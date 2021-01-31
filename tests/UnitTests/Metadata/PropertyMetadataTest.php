@@ -3,19 +3,23 @@
 namespace KAGOnlineTeam\LdapBundle\Tests\UnitTests\Metadata;
 
 use KAGOnlineTeam\LdapBundle\Metadata\PropertyMetadata;
-use KAGOnlineTeam\LdapBundle\Tests\Fixtures\DummyUser;
 use PHPUnit\Framework\TestCase;
-use ReflectionProperty;
 
 class PropertyMetadataTest extends TestCase
 {
     public function testValues()
     {
-        $reflection = new ReflectionProperty(DummyUser::class, 'username');
-        $metadata = new PropertyMetadata($reflection, 'uid');
+        $metadata = new PropertyMetadata('username', 'uid', 'array');
 
-        $this->assertSame('username', $metadata->getName());
-        $this->assertSame($reflection, $metadata->getReflectionProperty());
+        $this->assertSame('username', $metadata->getProperty());
         $this->assertSame('uid', $metadata->getAttribute());
+        $this->assertSame(PropertyMetadata::TYPE_ARRAY, $metadata->getType());
+    }
+
+    public function testInvalidType()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        new PropertyMetadata('name', 'sn', 'invalidType');
     }
 }

@@ -2,31 +2,26 @@
 
 namespace KAGOnlineTeam\LdapBundle\Tests\Fixtures;
 
-use KAGOnlineTeam\LdapBundle\RepositoryInterface;
+use KAGOnlineTeam\LdapBundle\AbstractRepository;
+use KAGOnlineTeam\LdapBundle\ManagerInterface;
+use KAGOnlineTeam\LdapBundle\Query\Options;
 
-class DummyUserRepository implements RepositoryInterface
+class DummyUserRepository extends AbstractRepository
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function find(string $dn): ?object
+    public function __construct(ManagerInterface $manager)
     {
-        return null;
+        parent::__construct($manager, DummyUser::class);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function findIn(string $dn): array
+    public function findByName(string $name): iterable
     {
-        return [];
-    }
+        $query = $this->createQueryBuilder()
+            ->filterEquality()
+                ->with('name', $name)
+            ->end()
+            ->scope(Options::SCOPE_SUB)
+            ->make();
 
-    /**
-     * {@inheritdoc}
-     */
-    public function findAll(): array
-    {
-        return [];
+        return $this->execute($query);
     }
 }

@@ -2,8 +2,6 @@
 
 namespace KAGOnlineTeam\LdapBundle\Metadata;
 
-use ReflectionProperty;
-
 /**
  * Stores the metadata for a single property which is associated with a Ldap
  * attribute.
@@ -12,37 +10,37 @@ use ReflectionProperty;
  */
 class PropertyMetadata
 {
-    /**
-     * @var ReflectionProperty
-     */
-    private $reflection;
+    const TYPE_SCALAR = 'scalar';
+    const TYPE_ARRAY = 'array';
+    const TYPE_MULIVALUE = 'multivalue';
 
-    /**
-     * @var string
-     */
+    private $property;
     private $attribute;
+    private $type;
 
-    public function __construct(ReflectionProperty $reflection, string $attribute)
+    public function __construct(string $property, string $attribute, string $type)
     {
-        $this->reflection = $reflection;
+        $this->property = $property;
         $this->attribute = $attribute;
+
+        if (!\in_array($type, [self::TYPE_SCALAR, self::TYPE_ARRAY, self::TYPE_MULIVALUE])) {
+            throw new \InvalidArgumentException('Unknown DN type given.');
+        }
+        $this->type = $type;
     }
 
-    /**
-     * @var string The name of the property
-     */
-    public function getName(): string
+    public function getProperty(): string
     {
-        return $this->reflection->getName();
-    }
-
-    public function getReflectionProperty(): ReflectionProperty
-    {
-        return $this->reflection;
+        return $this->property;
     }
 
     public function getAttribute(): string
     {
         return $this->attribute;
+    }
+
+    public function getType(): string
+    {
+        return $this->type;
     }
 }

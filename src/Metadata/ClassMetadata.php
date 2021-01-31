@@ -2,64 +2,31 @@
 
 namespace KAGOnlineTeam\LdapBundle\Metadata;
 
-use function array_search;
-use function array_unique;
-use InvalidArgumentException;
-use ReflectionClass;
-use ReflectionException;
-use ReflectionProperty;
-
 /**
- * Basic class metadata implementation.
+ * Stores the collected metadata for a class.
  *
  * @author Jan Flaßkamp
  */
-class ClassMetadata implements ClassMetadataInterface
+class ClassMetadata
 {
-    /**
-     * The reflection class of the associated class.
-     *
-     * @var ReflectionClass
-     */
-    private $reflection;
-
-    /**
-     * @var string The class of the repository
-     */
+    private $class;
     private $repositoryClass;
-
-    /**
-     * @var array An array which contains all necessary objectClasses
-     */
     private $objectClasses = [];
-
-    /**
-     * @var ReflectionProperty
-     */
-    private $dnProperty;
-
-    /**
-     * @var PropertyMetadata[]
-     */
+    private $dn;
     private $properties = [];
 
     public function __construct(string $class)
     {
-        try {
-            $this->reflection = new ReflectionClass($class);
-        } catch (ReflectionException $e) {
-            throw new InvalidArgumentException($e->getMessage());
+        if (!class_exists($class)) {
+            throw new \InvalidArgumentException(sprintf('The class "%s" does not exist.', $class));
         }
+
+        $this->class = $class;
     }
 
     public function getClass(): string
     {
-        return $this->reflection->getName();
-    }
-
-    public function getReflectionClass(): ReflectionClass
-    {
-        return $this->reflection;
+        return $this->class;
     }
 
     public function getRepositoryClass(): string
@@ -67,11 +34,9 @@ class ClassMetadata implements ClassMetadataInterface
         return $this->repositoryClass;
     }
 
-    public function setRepositoryClass(string $repositoryClass): self
+    public function setRepositoryClass(string $repositoryClass): void
     {
         $this->repositoryClass = $repositoryClass;
-
-        return $this;
     }
 
     public function getObjectClasses(): array
@@ -79,36 +44,19 @@ class ClassMetadata implements ClassMetadataInterface
         return $this->objectClasses;
     }
 
-    public function addObjectClass(string $objectClass): self
-    {
-        $result = array_search($objectClass, $this->objectClasses, true);
-
-        if (false !== $result) {
-            throw new InvalidArgumentException('The objectClass has already been added.');
-        }
-
-        $this->objectClasses[] = $objectClass;
-
-        return $this;
-    }
-
-    public function setObjectClasses(array $objectClasses): self
+    public function setObjectClasses(array $objectClasses): void
     {
         $this->objectClasses = array_unique($objectClasses);
-
-        return $this;
     }
 
-    public function getDnProperty(): ReflectionProperty
+    public function getDn(): DnMetadata
     {
-        return $this->dnProperty;
+        return $this->dn;
     }
 
-    public function setDnProperty(ReflectionProperty $dnProperty): self
+    public function setDn(DnMetadata $dn): void
     {
-        $this->dnProperty = $dnProperty;
-
-        return $this;
+        $this->dn = $dn;
     }
 
     public function getProperties(): array
@@ -116,68 +64,8 @@ class ClassMetadata implements ClassMetadataInterface
         return $this->properties;
     }
 
-    public function setProperties(array $properties): self
+    public function setProperties(array $properties): void
     {
-        $keyedProperties = [];
-        foreach ($properties as $property) {
-            if (!$property instanceof PropertyMetadata) {
-                throw new InvalidArgumentException(sprintf('The metadata for a property must be of type "%s"', PropertyMetadata::class));
-            }
-            $keyedProperties[$property->getName()] = $property;
-        }
-
-        $this->properties = $keyedProperties;
-
-        return $this;
-    }
-
-    public function hasProperty(string $name): bool
-    {
-        return \array_key_exists($name, $this->properties);
-    }
-
-    public function getProperty(string $name): PropertyMetadata
-    {
-        if (!$this->hasProperty($name)) {
-            throw new InvalidArgumentException(sprintf('The metadata for "%s" does not exist.', $name));
-        }
-
-        return $this->properties[$name];
-    }
-
-    public function addProperty(PropertyMetadata $property): self
-    {
-        $name = $property->getName();
-        if ($this->hasProperty($name)) {
-            throw new InvalidArgumentException(sprintf('The metadata for "%s" has already been added.', $name));
-        }
-
-        $this->properties[$name] = $property;
-
-        return $this;
-    }
-
-    public function replaceProperty(PropertyMetadata $property): self
-    {
-        $name = $property->getName();
-        if (!$this->hasProperty($name)) {
-            throw new InvalidArgumentException(sprintf('The metadata for "%s" does not exist.', $name));
-        }
-
-        $this->properties[$name] = $property;
-
-        return $this;
-    }
-
-    public function removeProperty(PropertyMetadata $property): self
-    {
-        $name = $property->getName();
-        if (!$this->hasProperty($name)) {
-            throw new InvalidArgumentException(sprintf('The metadata for "%s" does not exist.', $name));
-        }
-
-        unset($this->properties[$name]);
-
-        return $this;
+        $this->properties = $properties;
     }
 }

@@ -66,7 +66,7 @@ jobs:
 
       - name: Install Global Dependencies
         run: |
-          composer global require --no-progress --no-scripts --no-plugins symfony/flex dev-master
+          composer global require --no-progress --no-scripts --no-plugins symfony/flex dev-main
       - name: Install dependencies
         run: |
           composer config minimum-stability stable

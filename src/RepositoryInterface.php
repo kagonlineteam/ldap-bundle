@@ -3,36 +3,24 @@
 namespace KAGOnlineTeam\LdapBundle;
 
 /**
- * Repository interface for all repositories.
+ * Generic interface for all repository services.
  *
  * @author Jan Flaßkamp
  */
 interface RepositoryInterface
 {
     /**
-     * Finds an entry by a distinguished name.
-     *
-     * @param string $dn The distinguished name
-     *
-     * @return object|null An entry object if found
+     * @return string The entry class the repository is associated with
      */
+    public function getClass(): string;
+
     public function find(string $dn): ?object;
 
-    /**
-     * Finds all entries in the subtree of a DN.
-     *
-     * @param string $dn The distinguished name
-     *
-     * @return array An array of entry objects
-     */
-    public function findIn(string $dn): array;
+    public function findAll(): iterable;
 
-    /**
-     * Finds all entries.
-     *
-     * @param string $dn The distinguished name
-     *
-     * @return array An array of entry objects
-     */
-    public function findAll(): array;
+    public function persist(object $entry): void;
+
+    public function remove(object $entry): void;
+
+    public function commit(): void;
 }

@@ -2,7 +2,7 @@
 
 namespace KAGOnlineTeam\LdapBundle\Metadata\Extractor;
 
-use KAGOnlineTeam\LdapBundle\Metadata\ClassMetadataInterface;
+use KAGOnlineTeam\LdapBundle\Metadata\ClassMetadata;
 
 /**
  * A metadata extractor extracts entry class definitions which have
@@ -17,7 +17,7 @@ interface ExtractorInterface
      *
      * @throws NoMetadataException If the loader cannot find metadata for the class
      *
-     * @param ClassMetadataInterface
+     * @param ClassMetadata
      */
-    public function extractFor(ClassMetadataInterface $metadata): void;
+    public function extractFor(ClassMetadata $metadata): void;
 }

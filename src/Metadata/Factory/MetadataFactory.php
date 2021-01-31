@@ -2,13 +2,9 @@
 
 namespace KAGOnlineTeam\LdapBundle\Metadata\Factory;
 
-use function class_exists;
-use InvalidArgumentException;
 use KAGOnlineTeam\LdapBundle\Exception\NoMetadataException;
 use KAGOnlineTeam\LdapBundle\Metadata\ClassMetadata;
-use KAGOnlineTeam\LdapBundle\Metadata\ClassMetadataInterface;
 use KAGOnlineTeam\LdapBundle\Metadata\Extractor\ExtractorInterface;
-use function sprintf;
 
 /**
  * The main metadata factory which creates the metadata for a class by running
@@ -31,10 +27,10 @@ class MetadataFactory implements MetadataFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function create(string $class): ClassMetadataInterface
+    public function create(string $class): ClassMetadata
     {
         if (!class_exists($class)) {
-            throw new InvalidArgumentException(sprintf('The class "%s" does not exist.', $class));
+            throw new \InvalidArgumentException(sprintf('The class "%s" does not exist.', $class));
         }
 
         $metadata = new ClassMetadata($class);
