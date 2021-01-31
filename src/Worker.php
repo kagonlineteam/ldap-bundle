@@ -116,7 +116,7 @@ class Worker
 
         $id = spl_object_hash($entry);
 
-        if (self::MARK_PERSISTENCE !== $mark and 0 !== ($mark & $this->data[$id]['state'])) {
+        if (self::MARK_PERSISTENCE !== $mark && 0 !== ($mark & $this->data[$id]['state'])) {
             throw new \InvalidArgumentException('The mark is already set.');
         }
 
@@ -276,7 +276,7 @@ class Worker
                 'delete' => array_values(array_diff($oValues, $cValues)),
             ];
 
-            if (!empty($changeSet['attributes'][$attribute]['add']) or !empty($changeSet['attributes'][$attribute]['delete'])) {
+            if (!empty($changeSet['attributes'][$attribute]['add']) || !empty($changeSet['attributes'][$attribute]['delete'])) {
                 $hasChanges = true;
             }
         }

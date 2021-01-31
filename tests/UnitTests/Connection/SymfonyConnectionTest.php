@@ -108,8 +108,8 @@ class SymfonyConnectionTest extends TestCase
 
         $manager = $this->prophesize(EntryManager::class);
         $manager->applyOperations('cn=John,ou=employees,ou=users', [
-            new UpdateOperation(LDAP_MODIFY_BATCH_REPLACE, 'sn', ['Smith']),
-            new UpdateOperation(LDAP_MODIFY_BATCH_REPLACE, 'telephoneNumber', ['034313254', '004352345']),
+            new UpdateOperation(\LDAP_MODIFY_BATCH_REPLACE, 'sn', ['Smith']),
+            new UpdateOperation(\LDAP_MODIFY_BATCH_REPLACE, 'telephoneNumber', ['034313254', '004352345']),
         ])->shouldBeCalledTimes(1);
         $ldap->getEntryManager()->willReturn($manager->reveal());
 

@@ -95,7 +95,7 @@ class SymfonyConnection implements ConnectionInterface
                     } else {
                         $operations = [];
                         foreach ($request->getChangeSet()['attributes'] as $attribute => $changes) {
-                            if (empty($changes['add']) and empty($changes['delete'])) {
+                            if (empty($changes['add']) && empty($changes['delete'])) {
                                 continue;
                             }
 

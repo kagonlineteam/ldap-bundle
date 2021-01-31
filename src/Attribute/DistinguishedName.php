@@ -74,7 +74,7 @@ class DistinguishedName
         foreach ($this->rdns as $rdn) {
             $rdnPairs = [];
             foreach ($rdn as $pair) {
-                $value = ldap_escape($pair[1], '', LDAP_ESCAPE_DN);
+                $value = ldap_escape($pair[1], '', \LDAP_ESCAPE_DN);
                 if (!empty($value) && ' ' === $value[0]) {
                     $value = '\\20'.substr($value, 1);
                 }
@@ -184,7 +184,7 @@ class DistinguishedName
                 throw new \InvalidArgumentException('A name-value pair must consist of exactly two elements.');
             }
 
-            if (!\is_string($pair[0]) or !\is_string($pair[1])) {
+            if (!\is_string($pair[0]) || !\is_string($pair[1])) {
                 throw new \InvalidArgumentException('The name and value must be of type string.');
             }
         }

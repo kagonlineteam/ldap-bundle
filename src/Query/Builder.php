@@ -164,7 +164,7 @@ class Builder implements FilterInterface
             $queryFilter = $this->resolve([$this, 'getAttribute'], [self::class, 'escape']);
         }
 
-        if (!$hasQuery or $this->options['append_objectclasses']) {
+        if (!$hasQuery || $this->options['append_objectclasses']) {
             $objCFilter = $this->filterAnd();
 
             foreach ($this->metadata->getObjectClasses() as $objectClass) {
@@ -174,12 +174,12 @@ class Builder implements FilterInterface
             }
         }
 
-        if ($hasQuery and $this->options['append_objectclasses']) {
+        if ($hasQuery && $this->options['append_objectclasses']) {
             $rawFilter = (new RawFilter($objCFilter, FilterInterface::UNSPECIFIED))
                 ->from($queryFilter);
         }
 
-        if ($hasQuery and !$this->options['append_objectclasses']) {
+        if ($hasQuery && !$this->options['append_objectclasses']) {
             $filter = $queryFilter;
         } else {
             $filter = $objCFilter->resolve(function (string $property) {
@@ -261,7 +261,7 @@ class Builder implements FilterInterface
         }
 
         return (new Adapter())
-            ->escape($value, '', LDAP_ESCAPE_FILTER);
+            ->escape($value, '', \LDAP_ESCAPE_FILTER);
     }
 
     public function addChild(FilterInterface $child): void

@@ -43,7 +43,7 @@ class Options
     public static function assertLimit(int $limit): void
     {
         if ($limit < 1) {
-            throw new \InvalidArgumentException(sprintf('Limit must be greater than 0'));
+            throw new \InvalidArgumentException('Limit must be greater than 0');
         }
     }
 
