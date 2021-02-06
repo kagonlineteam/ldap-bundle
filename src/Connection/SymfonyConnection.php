@@ -36,6 +36,14 @@ class SymfonyConnection implements ConnectionInterface
     {
     }
 
+    public function bind(): void
+    {
+        if (!$this->bound) {
+            $this->ldap->bind(...$this->credentials);
+            $this->bound = true;
+        }
+    }
+
     public function disconnect(): void
     {
     }
@@ -47,12 +55,16 @@ class SymfonyConnection implements ConnectionInterface
 
     public function execute(RequestInterface $request): ResponseInterface
     {
-        if (!$this->bound) {
-            $this->ldap->bind(...$this->credentials);
-            $this->bound = true;
-        }
+        
 
         switch (\get_class($request)) {
+            case Request\BindRequest::class:
+                try {
+                    $this->ldap->bind($request->getDn(), $request->getPassword());
+                    return new Response\SuccessResponse();
+                } catch (\Exception $e) {
+                    return new Response\FailureResponse($e->getMessage());
+                }
             case Request\QueryRequest::class:
                 $iterator = $this->ldap->query(
                     $request->getDn(), $request->getFilter(), $request->getOptions()

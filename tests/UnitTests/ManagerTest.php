@@ -2,6 +2,7 @@
 
 namespace KAGOnlineTeam\LdapBundle\Tests\UnitTests;
 
+use KAGOnlineTeam\LdapBundle\Connection\ConnectionFactory;
 use KAGOnlineTeam\LdapBundle\Connection\ConnectionInterface;
 use KAGOnlineTeam\LdapBundle\Manager;
 use KAGOnlineTeam\LdapBundle\Metadata\ClassMetadata;
@@ -22,11 +23,16 @@ class ManagerTest extends TestCase
 
         $request = $this->prophesize(RequestInterface::class)->reveal();
         $response = $this->prophesize(ResponseInterface::class)->reveal();
+
         $connection = $this->prophesize(ConnectionInterface::class);
+        $connection->connect()->shouldBeCalledTimes(1);
+        $connection->bind()->shouldBeCalledTimes(1);
         $connection->getBaseDn()->willReturn('ou=employees,ou=users')->shouldBeCalled();
         $connection->execute(Argument::is($request))->willReturn($response)->shouldBeCalled();
+        $connectionFactory = $this->prophesize(ConnectionFactory::class);
+        $connectionFactory->create()->willReturn($connection->reveal());
 
-        $manager = new Manager($metadataFactory->reveal(), $connection->reveal());
+        $manager = new Manager($metadataFactory->reveal(), $connectionFactory->reveal());
         $this->assertSame('ou=employees,ou=users', $manager->getBaseDn());
         $this->assertSame($metadata, $manager->getMetadata('App\\Model\\Employee'));
         $this->assertSame($response, $manager->query($request));
@@ -36,6 +42,8 @@ class ManagerTest extends TestCase
     {
         $metadataFactory = $this->prophesize(MetadataFactoryInterface::class);
         $connection = $this->prophesize(ConnectionInterface::class);
+        $connection->connect()->shouldBeCalledTimes(1);
+        $connection->bind()->shouldBeCalledTimes(1);
 
         TestUpdateGeneratorClass::$requests = [
             ($request0 = $this->prophesize(RequestInterface::class)->reveal()),
@@ -70,7 +78,10 @@ class ManagerTest extends TestCase
         $connection->execute(Argument::is($fallback1))->willReturn($response)->shouldBeCalledTimes(1);
         $connection->execute(Argument::is($fallback0))->willReturn($response)->shouldBeCalledTimes(1);
 
-        $manager = new Manager($metadataFactory->reveal(), $connection->reveal());
+        $connectionFactory = $this->prophesize(ConnectionFactory::class);
+        $connectionFactory->create()->willReturn($connection->reveal());
+
+        $manager = new Manager($metadataFactory->reveal(), $connectionFactory->reveal());
         $manager->update(TestUpdateGeneratorClass::getTestGenerator());
     }
 }

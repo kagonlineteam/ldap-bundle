@@ -24,7 +24,7 @@ class ConnectionFactory
         $this->baseDn = $baseDn;
     }
 
-    public function getConnection(): ConnectionInterface
+    public function create(): ConnectionInterface
     {
         if (\is_string($this->type)) {
             if (\array_key_exists($this->type, self::$aliasMap)) {

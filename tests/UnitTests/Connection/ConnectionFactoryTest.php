@@ -11,7 +11,7 @@ class ConnectionFactoryTest extends TestCase
     public function testGetSymfonyConnection()
     {
         $factory = new ConnectionFactory('symfony_ldap', 'ldaps://ds.example.com:389/dc=example,dc=com', 'cn=admin?passwd', 'ou=users');
-        $connection = $factory->getConnection();
+        $connection = $factory->create();
 
         $this->assertSame(SymfonyConnection::class, \get_class($connection));
         $this->assertSame('ou=users', $connection->getBaseDn());
