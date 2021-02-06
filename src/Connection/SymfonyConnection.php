@@ -55,12 +55,11 @@ class SymfonyConnection implements ConnectionInterface
 
     public function execute(RequestInterface $request): ResponseInterface
     {
-        
-
         switch (\get_class($request)) {
             case Request\BindRequest::class:
                 try {
                     $this->ldap->bind($request->getDn(), $request->getPassword());
+
                     return new Response\SuccessResponse();
                 } catch (\Exception $e) {
                     return new Response\FailureResponse($e->getMessage());
