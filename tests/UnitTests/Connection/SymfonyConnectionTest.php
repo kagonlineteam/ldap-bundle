@@ -3,6 +3,7 @@
 namespace KAGOnlineTeam\LdapBundle\Tests\UnitTests\Connection;
 
 use KAGOnlineTeam\LdapBundle\Connection\SymfonyConnection;
+use KAGOnlineTeam\LdapBundle\Request\BindRequest;
 use KAGOnlineTeam\LdapBundle\Request\DeleteRequest;
 use KAGOnlineTeam\LdapBundle\Request\NewEntryRequest;
 use KAGOnlineTeam\LdapBundle\Request\QueryRequest;
@@ -28,6 +29,8 @@ class SymfonyConnectionTest extends TestCase
         $ldap->bind('cn=admin,dc=example,dc=com', 'passwd')->shouldBeCalledTimes(1);
 
         $connection = new SymfonyConnection($ldap->reveal(), 'cn=admin,dc=example,dc=com?passwd', 'ou=users');
+        $connection->connect();
+        $connection->bind();
         $this->assertSame('ou=users', $connection->getBaseDn());
 
         $this->expectException(\RuntimeException::class);
@@ -52,9 +55,23 @@ class SymfonyConnectionTest extends TestCase
         $ldap->query('dn', 'filter', ['options'])->willReturn($query->reveal())->shouldBeCalledTimes(1);
 
         $connection = new SymfonyConnection($ldap->reveal(), 'cn=admin,dc=example,dc=com?passwd', 'ou=users');
+        $connection->connect();
+        $connection->bind();
         $response = $connection->execute(new QueryRequest('dn', 'filter', ['options'], false));
 
         $this->assertEquals(new EntriesResponse(getTestQueryResultGenerator(), false), $response);
+    }
+
+    public function testBind(): void
+    {
+        $ldap = $this->prophesize(LdapInterface::class);
+        $ldap->bind('cn=user,dc=example,dc=com', 'password')->shouldBeCalledTimes(1);
+
+        $connection = new SymfonyConnection($ldap->reveal(), 'cn=admin,dc=example,dc=com?passwd', 'ou=users');
+        $connection->connect();
+        $response = $connection->execute(new BindRequest('cn=user,dc=example,dc=com', 'password'));
+
+        $this->assertEquals(new SuccessResponse(), $response);
     }
 
     public function testAdd(): void
@@ -70,6 +87,8 @@ class SymfonyConnectionTest extends TestCase
         $ldap->getEntryManager()->willReturn($manager->reveal());
 
         $connection = new SymfonyConnection($ldap->reveal(), 'cn=admin,dc=example,dc=com?passwd', 'ou=users');
+        $connection->connect();
+        $connection->bind();
         $response = $connection->execute(new NewEntryRequest('cn=NewOne,ou=users', [
             'ObjectClass' => ['top'],
             'cn' => ['NewOne'],
@@ -93,6 +112,8 @@ class SymfonyConnectionTest extends TestCase
         $ldap->getEntryManager()->willReturn($manager->reveal());
 
         $connection = new SymfonyConnection($ldap->reveal(), 'cn=admin,dc=example,dc=com?passwd', 'ou=users');
+        $connection->connect();
+        $connection->bind();
         $response = $connection->execute(new NewEntryRequest('cn=NewOne,ou=users', [
             'ObjectClass' => ['top'],
             'cn' => ['NewOne'],
@@ -114,6 +135,8 @@ class SymfonyConnectionTest extends TestCase
         $ldap->getEntryManager()->willReturn($manager->reveal());
 
         $connection = new SymfonyConnection($ldap->reveal(), 'cn=admin,dc=example,dc=com?passwd', 'ou=users');
+        $connection->connect();
+        $connection->bind();
         $response = $connection->execute(new UpdateRequest('cn=John,ou=employees,ou=users', [
             'dn' => null,
             'attributes' => [
@@ -142,6 +165,8 @@ class SymfonyConnectionTest extends TestCase
         $ldap->getEntryManager()->willReturn($manager->reveal());
 
         $connection = new SymfonyConnection($ldap->reveal(), 'cn=admin,dc=example,dc=com?passwd', 'ou=users');
+        $connection->connect();
+        $connection->bind();
         $response = $connection->execute(new UpdateRequest('cn=John,ou=employees,ou=users', [
             'dn' => 'cn=Peter,ou=employees,ou=users',
             'objectClass' => ['person', 'top'],
@@ -167,6 +192,8 @@ class SymfonyConnectionTest extends TestCase
         $ldap->getEntryManager()->willReturn($manager->reveal());
 
         $connection = new SymfonyConnection($ldap->reveal(), 'cn=admin,dc=example,dc=com?passwd', 'ou=users');
+        $connection->connect();
+        $connection->bind();
         $response = $connection->execute(new UpdateRequest('cn=John,ou=employees,ou=users', [
             'dn' => 'cn=Peter,ou=employees,ou=users',
             'objectClass' => ['person', 'top'],
@@ -204,6 +231,8 @@ class SymfonyConnectionTest extends TestCase
         $ldap->getEntryManager()->willReturn($manager->reveal());
 
         $connection = new SymfonyConnection($ldap->reveal(), 'cn=admin,dc=example,dc=com?passwd', 'ou=users');
+        $connection->connect();
+        $connection->bind();
         $response = $connection->execute(new UpdateRequest('cn=John,ou=employees,ou=users', [
             'dn' => 'cn=Peter,ou=employees,ou=users',
             'objectClass' => ['person', 'top'],
@@ -227,6 +256,8 @@ class SymfonyConnectionTest extends TestCase
         $ldap->getEntryManager()->willReturn($manager->reveal());
 
         $connection = new SymfonyConnection($ldap->reveal(), 'cn=admin,dc=example,dc=com?passwd', 'ou=users');
+        $connection->connect();
+        $connection->bind();
         $response = $connection->execute(new DeleteRequest('cn=Not\\20Needed'));
 
         $this->assertEquals(new SuccessResponse(), $response);
@@ -244,6 +275,8 @@ class SymfonyConnectionTest extends TestCase
         $ldap->getEntryManager()->willReturn($manager->reveal());
 
         $connection = new SymfonyConnection($ldap->reveal(), 'cn=admin,dc=example,dc=com?passwd', 'ou=users');
+        $connection->connect();
+        $connection->bind();
         $response = $connection->execute(new DeleteRequest('cn=Not\\20Needed'));
 
         $this->assertEquals(new FailureResponse('The operation failed.'), $response);

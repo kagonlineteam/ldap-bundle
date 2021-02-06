@@ -20,6 +20,8 @@ interface ConnectionInterface
      */
     public function connect(): void;
 
+    public function bind(): void;
+
     /**
      * Disconnects this instance from the Ldap server.
      */

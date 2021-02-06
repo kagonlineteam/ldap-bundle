@@ -62,6 +62,8 @@ class RepositoryTest extends KernelTestCase
         $updateResponse = new Response\SuccessResponse();
 
         $connection = $this->prophesize(ConnectionInterface::class);
+        $connection->connect()->shouldBeCalledTimes(1);
+        $connection->bind()->shouldBeCalledTimes(1);
         $connection->getBaseDn()->willReturn('ou=users,ou=system');
         $connection->execute(Argument::exact($findRequest))->willReturn($findResponse)->shouldBeCalledTimes(1);
         $connection->execute(Argument::exact($updateRequest))->willReturn($updateResponse)->shouldBeCalledTimes(1);
@@ -200,6 +202,8 @@ class RepositoryTest extends KernelTestCase
         ]);
 
         $connection = $this->prophesize(ConnectionInterface::class);
+        $connection->connect()->shouldBeCalledTimes(1);
+        $connection->bind()->shouldBeCalledTimes(1);
         $connection->getBaseDn()->willReturn('ou=users,ou=system');
         $connection->execute(Argument::exact($queryRequest))->willReturn($queryResponse)->shouldBeCalledTimes(1);
         $connection->execute(Argument::exact($updateRequest0))->willReturn($successResponse)->shouldBeCalledTimes(1);

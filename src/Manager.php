@@ -2,7 +2,7 @@
 
 namespace KAGOnlineTeam\LdapBundle;
 
-use KAGOnlineTeam\LdapBundle\Connection\ConnectionInterface;
+use KAGOnlineTeam\LdapBundle\Connection\ConnectionFactory;
 use KAGOnlineTeam\LdapBundle\Metadata\ClassMetadata;
 use KAGOnlineTeam\LdapBundle\Metadata\Factory\MetadataFactoryInterface;
 use KAGOnlineTeam\LdapBundle\Query\Query;
@@ -18,19 +18,21 @@ class Manager implements ManagerInterface
     private $metadataFactory;
 
     /**
-     * @var ConnectionInterface
+     * @var ConnectionFactory
      */
-    private $connection;
+    private $connectionFactory;
 
     /**
      * @var EventDispatcher
      */
     private $dispatcher;
 
-    public function __construct(MetadataFactoryInterface $metadataFactory, ConnectionInterface $connection)
+    private $boundConnection = null;
+
+    public function __construct(MetadataFactoryInterface $metadataFactory, ConnectionFactory $connectionFactory)
     {
         $this->metadataFactory = $metadataFactory;
-        $this->connection = $connection;
+        $this->connectionFactory = $connectionFactory;
         $this->dispatcher = new EventDispatcher();
     }
 
@@ -39,7 +41,9 @@ class Manager implements ManagerInterface
      */
     public function getBaseDn(): string
     {
-        return $this->connection->getBaseDn();
+        $this->setUpConnection();
+
+        return $this->boundConnection->getBaseDn();
     }
 
     /**
@@ -53,7 +57,7 @@ class Manager implements ManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function getRepositoryId(string $class): string
+    public function getRepositoryClass(string $class): string
     {
         return $this->getMetadata($class)->getRepositoryClass();
     }
@@ -63,7 +67,9 @@ class Manager implements ManagerInterface
      */
     public function query(RequestInterface $request): ResponseInterface
     {
-        return $this->connection->execute($request);
+        $this->setUpConnection();
+
+        return $this->boundConnection->execute($request);
     }
 
     /**
@@ -71,13 +77,26 @@ class Manager implements ManagerInterface
      */
     public function update(\Generator $reqGen): void
     {
+        $this->setUpConnection();
+
         $reqGen->rewind();
         while ($reqGen->valid()) {
-            $response = $this->connection->execute($reqGen->current());
+            $response = $this->boundConnection->execute($reqGen->current());
             if ($response instanceof Response\FailureResponse) {
                 $reqGen->throw(new \Exception($response->getMessage()));
             }
             $reqGen->next();
+        }
+    }
+
+    private function setUpConnection(): void
+    {
+        if (null === $this->boundConnection) {
+            $connection = $this->connectionFactory->create();
+            $connection->connect();
+            $connection->bind();
+
+            $this->boundConnection = $connection;
         }
     }
 }

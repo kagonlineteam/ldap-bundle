@@ -38,7 +38,7 @@ interface ManagerInterface
      * @throws \InvalidArgumentException If the given class does not exist
      * @throws NoMetadataException       If metadata for the class cannot be found
      */
-    public function getRepositoryId(string $class): string;
+    public function getRepositoryClass(string $class): string;
 
     public function query(RequestInterface $request): ResponseInterface;
 
