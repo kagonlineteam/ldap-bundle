@@ -65,7 +65,7 @@ class User
     private $lastName;
     
     // Custom methods 
-    ...
+    // ...
 }
 ```
 
@@ -103,8 +103,7 @@ Das Ldap Attribut für diese Klassenvariable.
 
 Die Repository Klasse ist ein Service in Symfony und wird dafür benutzt um Objekte aus einer Query zu laden und 
 Objekte im Ldap zu speichern/löschen. Dazu kann einfach die `KAGOnlineTeam\LdapBundle\AbstractRepository` abgeleitet 
-werden. Damit sind alle wichtigen Funktionen bereits implementiert und kann ggf. um spezielle Query Methoden 
-erweitert werden.
+werden. Damit sind alle wichtigen Funktionen bereits implementiert.
 
 ```php
 <?php
@@ -136,3 +135,7 @@ class UserRepository extends AbstractRepository
     }
 }
 ```
+
+Der Konstruktor muss, wie im Beispiel, den Konstruktor der Parent Klasse mit dem `ManagerInterface`-Service und 
+der Klasse der Entität aufrufen. Denkbar wären im Konstruktor ebenfalls weitere Services, die dann in den eigenen 
+Methoden benutzt werden.

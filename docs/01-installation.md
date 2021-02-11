@@ -10,7 +10,7 @@ werden. Dazu wird die "require"-Liste ergänzt und "repositories" hinzugefügt.
 ```json
     ...
     "require": {
-        ...
+        
         "kagonlineteam/ldap-bundle": "dev-master"
     },
     "repositories": [
