@@ -14,9 +14,9 @@ trait NestingTrait
      *
      * @return FlatFilter The filter to configure
      */
-    public function filterPresence(): FlatFilter
+    public function filterPresence(): PresenceFilter
     {
-        return new FlatFilter($this, FilterInterface::PRESENCE);
+        return new PresenceFilter($this, FilterInterface::PRESENCE);
     }
 
     /**
