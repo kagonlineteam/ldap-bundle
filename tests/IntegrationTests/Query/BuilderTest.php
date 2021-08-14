@@ -22,4 +22,19 @@ class BuilderTest extends KernelTestCase
 
         $this->assertSame('(&(objectClass=inetOrgPerson)(objectClass=person)(objectClass=top)(uid=FMüller))', $query->getFilter());
     }
+    
+    public function testPresenceFilter()
+    {
+        self::bootKernel();
+
+        $manager = static::$container->get('kagonlineteam_ldap.manager');
+
+        $query = (new Builder('ou=users,dc=example,dc=com', $manager->getMetadata(DummyUser::class)))
+            ->filterPresence()
+                ->on('username')
+            ->end()
+            ->make();
+
+        $this->assertSame('(&(objectClass=inetOrgPerson)(objectClass=person)(objectClass=top)(uid=*))', $query->getFilter());
+    }
 }
