@@ -254,6 +254,7 @@ class Worker
 
         // Handle all attributes not present in the original form.
         foreach (array_diff_key($current['attributes'], $original['attributes']) as $attribute => $values) {
+            if ($values == [0 => NULL] || $values == NULL) continue;
             $changeSet['attributes'][$attribute] = [
                 'add' => $values,
                 'keep' => [],
